@@ -19,7 +19,8 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
-
+tests/
+.pytest_cache/
 # Virtual Environment
 venv/
 ENV/

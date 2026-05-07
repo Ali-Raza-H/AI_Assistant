@@ -1,30 +1,15 @@
 import ollama
-import os
 import json
-import datetime
 from tools.chatHistoryTools import *
 from tools.runBashCommands import *
-
-
-#fuction to exit the cli assistant
-def quitCommand():
-    wipeChatHistory()
-    print("Goodbye")
-    exit()
+from agent.agent import *
 
 
 def streamAnswer(message):
 
     #Variables
-    tools = []
-    dateTimeNow = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") # gets current date time for llm
-    #load chat memory fron json
+    tools = [bashToolPrompt]
     chatMemory = json.load(open(historyJsonPath))
-    systemPrompt = {
-        "Prompt" : "You are a helpfull assistant that answer questions and calls tools available as needed",
-        "Chat Memory: " : chatMemory,
-        "Current Date Time" : str(dateTimeNow),
-    }
 
     #handle exit command
     if message == "/quit":
@@ -46,6 +31,10 @@ def streamAnswer(message):
                 "content": str(systemPrompt)
             },
             {
+                "role": "system",
+                "content": str(tools)
+            },
+            {
                 "role": "user",
                 "content": message,
             }
@@ -57,7 +46,17 @@ def streamAnswer(message):
     for part in response:
         fullMessage = fullMessage + part['message']['content']
         print(part['message']['content'], end='', flush=True)
-    
+
+    try:
+        responseJson = json.loads(fullMessage)
+        if responseJson['tool'] == "runBash":
+            with open(os.path.join(os.getcwd(), "C:/Users/khada/OneDrive - The Sixth Form Bolton/Subjects/Personal Project/AI_Assistant/backend/data/temp/commands.json"), "w") as f:
+                json.dump({"command": responseJson['command']}, f)
+            runCommands()
+    except json.JSONDecodeError:
+        print("LLM response is not a valid JSON. Response was:")
+        print(fullMessage)
+
     #Save chat history to json file
     saveChatHistory(message, fullMessage)
     print("\n")

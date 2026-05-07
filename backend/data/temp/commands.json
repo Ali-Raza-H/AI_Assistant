@@ -1,5 +1,1 @@
-{
-    "runBash": "start https://google.com ",
-    "runBash1": "dir",
-    "runBash2": "echo Hello World"
-}
+{"command": "dir"}
