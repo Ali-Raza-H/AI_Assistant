@@ -1,7 +1,7 @@
 import json
 
 
-historyJsonPath = 'backend/data/chatHistory.json'
+historyJsonPath = 'backend/schemas/chatHistory.json'
 jsonData = []
 
 def loadChatHistory():

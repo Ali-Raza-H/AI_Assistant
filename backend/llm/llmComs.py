@@ -1,16 +1,43 @@
 import ollama
 import json
-from tools.chatHistoryTools import *
+from tools.chatHistoryTools import historyJsonPath
 from tools.runBashCommands import *
-from agent.agent import *
+from agent.agent import quitCommand, systemPrompt, routerPrompt
+from tools.toolManager import toolRouter
 
 
-def streamAnswer(message):
+def router(userInput):
 
-    #Variables
-    tools = [bashToolPrompt]
+    #handles quit command
+    if userInput == "/quit":
+        quitCommand()
+        return
+    
+
+
+    #llm comm
+    response = ollama.chat(
+        model = "dolphin-llama3:8b",
+        messages=[
+            {
+                "role": "system",
+                "content": str(routerPrompt) #change to router prompt
+            },
+            {
+                "role": "user",
+                "content": str(userInput)
+            }
+        ]
+    )
+
+    routerResponse = response['message']['content']
+    print("Router Response:", routerResponse)
+    toolRouter(routerResponse)
+
+
+def llmComs(message):
     chatMemory = json.load(open(historyJsonPath))
-
+    routerResponse = router(message)
     #handle exit command
     if message == "/quit":
         quitCommand()
@@ -31,32 +58,17 @@ def streamAnswer(message):
                 "content": str(systemPrompt)
             },
             {
-                "role": "system",
-                "content": str(tools)
-            },
-            {
                 "role": "user",
-                "content": message,
+                "content": str(routerResponse),
             }
-        ], stream = True
+        ],stream = True
     )
+    fullResponse = ""
+    for chunk in response:
+        if 'message' in chunk:
+            content = chunk['message']['content']
+            fullResponse += content
+            print(content, end='', flush=True)
 
-    #stream answer back to user
-    fullMessage=""
-    for part in response:
-        fullMessage = fullMessage + part['message']['content']
-        print(part['message']['content'], end='', flush=True)
 
-    try:
-        responseJson = json.loads(fullMessage)
-        if responseJson['tool'] == "runBash":
-            with open(os.path.join(os.getcwd(), "C:/Users/khada/OneDrive - The Sixth Form Bolton/Subjects/Personal Project/AI_Assistant/backend/data/temp/commands.json"), "w") as f:
-                json.dump({"command": responseJson['command']}, f)
-            runCommands()
-    except json.JSONDecodeError:
-        print("LLM response is not a valid JSON. Response was:")
-        print(fullMessage)
 
-    #Save chat history to json file
-    saveChatHistory(message, fullMessage)
-    print("\n")

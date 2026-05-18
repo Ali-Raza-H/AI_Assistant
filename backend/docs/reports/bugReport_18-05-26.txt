@@ -1,0 +1,28 @@
+1. Unhandled Command Failures (Critical Crash)
+   * Symptom: The program crashes with a subprocess.CalledProcessError when a tool (like cat) fails.
+   * Root Cause: In backend/tools/runBashCommands.py, subprocess.check_output is called without a try/except block. On
+     Windows, executing Linux commands (like cat) returns a non-zero exit status, which triggers an exception that
+     terminates the entire Python process.
+
+2. Broken Tool Data Flow (Logic Gap)
+* Symptom: The LLM asks "what was in the folder?" even after dir was successfully run.
+* Root Cause: The output of the tools is printed to the console but never returned to the LLM.
+    * router() in llmComs.py calls the tool but doesn't return the result.
+    * llmComs() then passes routerResponse (the raw JSON instruction) to the second LLM call instead of the result of
+        the command. The LLM never "sees" what the command actually did.
+
+3. Path Portability & Logic Errors
+* Hardcoded Absolute Paths: toolManager.py and runBashCommands.py use a hardcoded path (C:/Users/khada/...). This
+    will fail if the project is moved or run on a system with a different username.
+* Iteration Bug: In runBashCommands.py, the code tries to iterate over jsonReturn (a dictionary) as if it were a list
+    of commands, which leads to incorrect key access.
+
+4. "Hallucinated" Tooling
+* Symptom: The router attempts to use tools like ls, respond, or runPython.
+* Root Cause: These tools are not defined in your toolsSchema.json, but the LLM is "guessing" they exist because the
+    system prompt isn't restrictive enough or the schema is incomplete.
+
+5. Broken Chat History
+* Symptom: The assistant doesn't remember previous messages (e.g., "what was in the folder?").
+* Root Cause: While there are functions to save history in chatHistoryTools.py, they are never called during the main
+    loop in llmComs.py. The chatHistory.json remains an empty list [].

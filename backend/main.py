@@ -4,4 +4,4 @@ if __name__ == "__main__":
     while True:
         userInput = input(">>")
         print("")
-        streamAnswer(userInput)
+        llmComs(userInput)
