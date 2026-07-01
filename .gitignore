@@ -32,3 +32,6 @@ ENV/
 # OS junk
 .DS_Store
 Thumbs.db
+
+# DEV too
+.dev.json
