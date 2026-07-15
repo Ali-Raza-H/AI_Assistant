@@ -1,12 +1,19 @@
 import json
 import os
 import subprocess
+from tools.PATHS import *
+import time
 
 def runCommands():
     
-    with open(os.path.join(os.getcwd(), "C:/Users/khada/OneDrive - The Sixth Form Bolton/Subjects/Personal Project/AI_Assistant/backend/schemas/temp/commands.json"), "r") as f:
+    with open(COMMANDS_PATH, "r") as f:
         jsonReturn = json.load(f)
     for runBash in jsonReturn:
         #os.system(jsonReturn[runBash])
         commandsOutput = subprocess.check_output(jsonReturn[runBash], shell=True)
-        print(commandsOutput)
+        #print(commandsOutput)
+        print("runBashCommands file:")
+        print("Running commands function used")
+        time.sleep(3)
+        return commandsOutput
+

@@ -1,4 +1,4 @@
 {
     "runBash": "Runs shell commands. Before running any commands comfirm which OS the system is running on",
-    "llmCom": "Sends message to main llm"
+    "llmCom": "Exact input message"
 }
