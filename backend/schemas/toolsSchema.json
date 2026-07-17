@@ -1,4 +1,12 @@
 {
-    "runBash": "Runs shell commands. Before running any commands comfirm which OS the system is running on",
-    "llmCom": "Exact input message"
+    "runBash": {
+        "description": "Runs Bash commands on the user's Arch Linux computer.",
+        "useCase": "Use when the user asks to run a command, inspect the system, manage files, open apps, or perform an action that requires the terminal.",
+        "input": "A valid Bash command."
+    },
+    "llmCom": {
+        "description": "Handles normal conversation and generates the final response.",
+        "use_when": "Use for questions, explanations, coding help, opinions, brainstorming, writing, or anything that does not require a computer action.",
+        "input": "The user's exact original message."
+    }
 }

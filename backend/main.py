@@ -1,49 +1,34 @@
 import ollama
-import json
-import datetime
-import time
-from tools.chatHistoryTools import *
-from tools.runBashCommands import *
-from tools.toolManager import *
-from tools.chatHistoryTools import *
-from llm.prompts import *
-#Variables
-chatHistory = loadChatHistory()
-dateTimeNow = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-with open("backend/schemas/toolsSchema.json", "r") as f:
-    tools = "Tools available: ", json.load(f)
+from src.tools.chatHistoryTools import wipeChatHistory, saveChatHistory
+from modules.toolManager import toolRouter
+from src.tools.logger import log
+from src.tools.prompts import routerPrompt, llmPrompt
 
-#routerPrompt = "DECIDE WHAT TO DO. RESPOND ONLY IN JSON FORMAT. JSON SCHEMA RESPONSE: {'tool': 'tool from tools available', 'action': 'action/response'} Example response: {'tool': 'runBash', 'action': 'ls'}. Available tools: " + str(tools) + "Use llmComs for normal talking and runBash for commands only. You're a router. You're job is not to respond but to route"
-
+#System prompts
 newRouterPrompt = routerPrompt
+systemPrompt = llmPrompt
 
-systemPrompt = "You are a helpful assistant that answer questions and calls tools available as needed " + "chat history: ", chatHistory
-
-str(chatHistory)
-str(routerPrompt)
-str(systemPrompt)
-print("main file: ")
-print("Variables created")
-time.sleep(3)
+log("info", "Main.py: Variables created")
 
 
 def quitCommand():
     wipeChatHistory()
     print("Goodbye")
-    print("main file: ")
-    print("quit function executed")
-    time.sleep(3)
+    log("debug", "Main.py: quit function executed")
     exit()
 
 
 def router(userInput):
     
+    log("debug", "main.py: router function started")
+    
     if userInput == "/quit":
         quitCommand()
         return
     
-    userInput = "User's Input: ", userInput
-    str(userInput)
+    userInput = f"User's Input: {userInput}"
+    
+    log("debug", "main.py: ollama communication started")
     response = ollama.chat(
         model = "dolphin-llama3:8b",
         messages=[
@@ -57,20 +42,28 @@ def router(userInput):
             }
         ]
     )
+    log("debug", "main.py: ollama communication ended")
+
 
     routerResponse = response['message']['content']
-    print("Router Response:", routerResponse)
     toolAns = toolRouter(routerResponse)
-    print("Tool Manager output", toolAns)
+    
+    #Logging responses
+    log("info", f"main.py: Router Response: {routerResponse}")
+    log("info", f"main.py: Tool Manager output: {toolAns}")
+    
     return toolAns
 
 
 
 def llmComs(message):
+    log("debug", "main.py: llmComs function started")
+    
     routerResponse = router(message)
-    print("Router Function in llmComs Response: ", routerResponse)
-    
-    
+    log("info", f"main.py: llmComs function router function output recived: {routerResponse}")
+
+
+    log("debug", "main.py: Main llm communication started")    
     response = ollama.chat(
         model = "dolphin-llama3:8b",
         messages = [
@@ -85,26 +78,39 @@ def llmComs(message):
         ],
         stream = True
     )
+    log("debug", "main.py: Main llm communication ended")
+    
+    
+    log("debug", "streaming main llm answer")
     fullResponse = ""
     for chunk in response:
         if 'message' in chunk:
             content = chunk['message']['content']
             fullResponse += content
             print(content, end='', flush=True)
+    
+    log("debug", "main.py: Function to save chat history called")
     saveChatHistory(message, fullResponse)
 
 
 
 
-
-
+def main():
+    try:
+        while True:
+            print("")
+            userInput = input(">>   ")
+            print("")
+            llmComs(userInput)
+    
+    except Exception as e:
+        log("error", f"main.py: main function error: {e}")
+        print(f"Error: {e}")
+        quitCommand()
 
 
 
 
 
 if __name__ == "__main__":    
-    while True:
-       userInput = input(">>")
-       print("")
-       llmComs(userInput)
+    main()

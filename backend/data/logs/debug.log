@@ -1,0 +1,579 @@
+2026-07-16 19:15:33,527 [DEBUG] chatHistoryTools.py: load chat history function started
+2026-07-16 19:17:14,725 [DEBUG] chatHistoryTools.py: load chat history function started
+2026-07-16 19:17:29,426 [DEBUG] chatHistoryTools.py: load chat history function started
+2026-07-16 19:17:29,426 [DEBUG] chatHistoryTools.py: load chat history function finished
+2026-07-16 19:17:32,421 [DEBUG] main.py: llmComs function started
+2026-07-16 19:17:32,421 [DEBUG] main.py: router function started
+2026-07-16 19:17:32,422 [DEBUG] main.py: ollama communication started
+2026-07-16 19:17:52,717 [DEBUG] chatHistoryTools.py: load chat history function started
+2026-07-16 19:17:52,717 [DEBUG] chatHistoryTools.py: load chat history function finished
+2026-07-16 19:17:53,918 [DEBUG] main.py: llmComs function started
+2026-07-16 19:17:53,919 [DEBUG] main.py: router function started
+2026-07-16 19:17:53,919 [DEBUG] main.py: ollama communication started
+2026-07-16 19:18:12,271 [DEBUG] main.py: ollama communication ended
+2026-07-16 19:18:12,271 [DEBUG] toolManager.py: tool router function started
+2026-07-16 19:18:12,271 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-16 19:18:12,272 [DEBUG] main.py: Main llm communication started
+2026-07-16 19:18:12,272 [DEBUG] main.py: Main llm communication ended
+2026-07-16 19:18:12,272 [DEBUG] streaming main llm answer
+2026-07-16 19:18:14,157 [DEBUG] main.py: Function to save chat history called
+2026-07-16 19:18:14,157 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-16 19:18:14,157 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-16 19:18:42,761 [DEBUG] main.py: llmComs function started
+2026-07-16 19:18:42,762 [DEBUG] main.py: router function started
+2026-07-16 19:18:42,762 [DEBUG] main.py: ollama communication started
+2026-07-16 19:18:44,702 [DEBUG] main.py: ollama communication ended
+2026-07-16 19:18:44,702 [DEBUG] toolManager.py: tool router function started
+2026-07-16 19:18:44,703 [DEBUG] toolManager.py: Using runBash tool
+2026-07-16 19:18:44,703 [DEBUG] runBashCommands.py: runCommands function started
+2026-07-16 19:18:44,703 [DEBUG] runBashCommands.py: loading json file
+2026-07-16 19:18:44,705 [DEBUG] main.py: Main llm communication started
+2026-07-16 19:18:44,705 [DEBUG] main.py: Main llm communication ended
+2026-07-16 19:18:44,705 [DEBUG] streaming main llm answer
+2026-07-16 19:18:53,764 [DEBUG] main.py: Function to save chat history called
+2026-07-16 19:18:53,765 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-16 19:18:53,765 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-16 19:18:56,463 [DEBUG] main.py: llmComs function started
+2026-07-16 19:18:56,463 [DEBUG] main.py: router function started
+2026-07-16 19:18:56,463 [DEBUG] chatHistoryTools.py: wipe chat history function started
+2026-07-16 19:18:56,464 [DEBUG] chatHistoryTools.py:, wipe chat history function finished
+2026-07-16 19:18:56,464 [DEBUG] Main.py: quit function executed
+2026-07-16 19:22:40,346 [DEBUG] chatHistoryTools.py: load chat history function started
+2026-07-16 19:22:40,346 [DEBUG] chatHistoryTools.py: load chat history function finished
+2026-07-16 19:22:58,325 [DEBUG] chatHistoryTools.py: load chat history function started
+2026-07-16 19:22:58,325 [DEBUG] chatHistoryTools.py: load chat history function finished
+2026-07-16 19:22:59,643 [DEBUG] main.py: llmComs function started
+2026-07-16 19:22:59,643 [DEBUG] main.py: router function started
+2026-07-16 19:22:59,643 [DEBUG] main.py: ollama communication started
+2026-07-16 19:23:01,398 [DEBUG] main.py: ollama communication ended
+2026-07-16 19:23:01,398 [DEBUG] toolManager.py: tool router function started
+2026-07-16 19:23:01,399 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-16 19:23:01,399 [DEBUG] main.py: Main llm communication started
+2026-07-16 19:23:01,399 [DEBUG] main.py: Main llm communication ended
+2026-07-16 19:23:01,399 [DEBUG] streaming main llm answer
+2026-07-16 19:23:03,364 [DEBUG] main.py: Function to save chat history called
+2026-07-16 19:23:03,364 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-16 19:23:03,365 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-16 19:23:08,675 [DEBUG] main.py: llmComs function started
+2026-07-16 19:23:08,676 [DEBUG] main.py: router function started
+2026-07-16 19:23:08,676 [DEBUG] main.py: ollama communication started
+2026-07-16 19:23:10,987 [DEBUG] main.py: ollama communication ended
+2026-07-16 19:23:10,987 [DEBUG] toolManager.py: tool router function started
+2026-07-16 19:23:10,987 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-16 19:23:10,987 [DEBUG] main.py: Main llm communication started
+2026-07-16 19:23:10,988 [DEBUG] main.py: Main llm communication ended
+2026-07-16 19:23:10,988 [DEBUG] streaming main llm answer
+2026-07-16 19:23:13,813 [DEBUG] main.py: Function to save chat history called
+2026-07-16 19:23:13,813 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-16 19:23:13,813 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-16 19:23:39,116 [DEBUG] main.py: llmComs function started
+2026-07-16 19:23:39,116 [DEBUG] main.py: router function started
+2026-07-16 19:23:39,116 [DEBUG] main.py: ollama communication started
+2026-07-16 19:23:43,252 [DEBUG] main.py: ollama communication ended
+2026-07-16 19:23:43,253 [DEBUG] toolManager.py: tool router function started
+2026-07-16 19:23:43,253 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-16 19:23:43,253 [DEBUG] main.py: Main llm communication started
+2026-07-16 19:23:43,253 [DEBUG] main.py: Main llm communication ended
+2026-07-16 19:23:43,253 [DEBUG] streaming main llm answer
+2026-07-16 19:23:52,477 [DEBUG] main.py: Function to save chat history called
+2026-07-16 19:23:52,477 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-16 19:23:52,478 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-16 19:24:27,435 [DEBUG] main.py: llmComs function started
+2026-07-16 19:24:27,436 [DEBUG] main.py: router function started
+2026-07-16 19:24:27,436 [DEBUG] main.py: ollama communication started
+2026-07-16 19:24:31,117 [DEBUG] main.py: ollama communication ended
+2026-07-16 19:24:31,117 [DEBUG] toolManager.py: tool router function started
+2026-07-16 19:24:31,117 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-16 19:24:31,117 [DEBUG] main.py: Main llm communication started
+2026-07-16 19:24:31,118 [DEBUG] main.py: Main llm communication ended
+2026-07-16 19:24:31,118 [DEBUG] streaming main llm answer
+2026-07-16 19:24:43,661 [DEBUG] main.py: Function to save chat history called
+2026-07-16 19:24:43,661 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-16 19:24:43,661 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-16 19:24:56,853 [DEBUG] main.py: llmComs function started
+2026-07-16 19:24:56,853 [DEBUG] main.py: router function started
+2026-07-16 19:24:56,853 [DEBUG] main.py: ollama communication started
+2026-07-16 19:24:59,933 [DEBUG] main.py: ollama communication ended
+2026-07-16 19:24:59,933 [DEBUG] toolManager.py: tool router function started
+2026-07-16 19:24:59,933 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-16 19:24:59,934 [DEBUG] main.py: Main llm communication started
+2026-07-16 19:24:59,934 [DEBUG] main.py: Main llm communication ended
+2026-07-16 19:24:59,934 [DEBUG] streaming main llm answer
+2026-07-16 19:25:20,283 [DEBUG] main.py: Function to save chat history called
+2026-07-16 19:25:20,283 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-16 19:25:20,283 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-16 19:26:12,302 [DEBUG] main.py: llmComs function started
+2026-07-16 19:26:12,302 [DEBUG] main.py: router function started
+2026-07-16 19:26:12,302 [DEBUG] main.py: ollama communication started
+2026-07-16 19:26:21,549 [DEBUG] main.py: ollama communication ended
+2026-07-16 19:26:21,549 [DEBUG] toolManager.py: tool router function started
+2026-07-16 19:26:21,549 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-16 19:26:21,549 [DEBUG] main.py: Main llm communication started
+2026-07-16 19:26:21,550 [DEBUG] main.py: Main llm communication ended
+2026-07-16 19:26:21,550 [DEBUG] streaming main llm answer
+2026-07-16 19:26:46,801 [DEBUG] main.py: Function to save chat history called
+2026-07-16 19:26:46,801 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-16 19:26:46,801 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-16 19:28:12,504 [DEBUG] main.py: llmComs function started
+2026-07-16 19:28:12,504 [DEBUG] main.py: router function started
+2026-07-16 19:28:12,505 [DEBUG] main.py: ollama communication started
+2026-07-16 19:28:21,031 [DEBUG] main.py: ollama communication ended
+2026-07-16 19:28:21,031 [DEBUG] toolManager.py: tool router function started
+2026-07-16 19:28:21,031 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-16 19:28:21,032 [DEBUG] main.py: Main llm communication started
+2026-07-16 19:28:21,032 [DEBUG] main.py: Main llm communication ended
+2026-07-16 19:28:21,032 [DEBUG] streaming main llm answer
+2026-07-16 19:28:49,795 [DEBUG] main.py: Function to save chat history called
+2026-07-16 19:28:49,795 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-16 19:28:49,795 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-16 19:29:32,834 [DEBUG] main.py: llmComs function started
+2026-07-16 19:29:32,835 [DEBUG] main.py: router function started
+2026-07-16 19:29:32,835 [DEBUG] main.py: ollama communication started
+2026-07-16 19:29:35,637 [DEBUG] main.py: ollama communication ended
+2026-07-16 19:29:35,637 [DEBUG] toolManager.py: tool router function started
+2026-07-16 19:29:35,637 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-16 19:29:35,638 [DEBUG] main.py: Main llm communication started
+2026-07-16 19:29:35,638 [DEBUG] main.py: Main llm communication ended
+2026-07-16 19:29:35,638 [DEBUG] streaming main llm answer
+2026-07-16 19:29:50,201 [DEBUG] main.py: Function to save chat history called
+2026-07-16 19:29:50,201 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-16 19:29:50,201 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-16 19:29:52,490 [DEBUG] main.py: llmComs function started
+2026-07-16 19:29:52,490 [DEBUG] main.py: router function started
+2026-07-16 19:29:52,491 [DEBUG] main.py: ollama communication started
+2026-07-16 19:29:54,301 [DEBUG] main.py: ollama communication ended
+2026-07-16 19:29:54,301 [DEBUG] toolManager.py: tool router function started
+2026-07-16 19:29:54,301 [DEBUG] toolManager.py: Using runBash tool
+2026-07-16 19:29:54,301 [DEBUG] runBashCommands.py: runCommands function started
+2026-07-16 19:29:54,301 [DEBUG] runBashCommands.py: loading json file
+2026-07-16 19:29:54,304 [DEBUG] runBashCommands.py: commands executed
+2026-07-16 19:29:54,305 [DEBUG] main.py: Main llm communication started
+2026-07-16 19:29:54,305 [DEBUG] main.py: Main llm communication ended
+2026-07-16 19:29:54,305 [DEBUG] streaming main llm answer
+2026-07-16 19:30:09,429 [DEBUG] main.py: Function to save chat history called
+2026-07-16 19:30:09,429 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-16 19:30:09,429 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-16 19:30:27,039 [DEBUG] main.py: llmComs function started
+2026-07-16 19:30:27,039 [DEBUG] main.py: router function started
+2026-07-16 19:30:27,039 [DEBUG] main.py: ollama communication started
+2026-07-16 19:30:30,239 [DEBUG] main.py: ollama communication ended
+2026-07-16 19:30:30,240 [DEBUG] toolManager.py: tool router function started
+2026-07-16 19:30:30,240 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-16 19:30:30,240 [DEBUG] main.py: Main llm communication started
+2026-07-16 19:30:30,240 [DEBUG] main.py: Main llm communication ended
+2026-07-16 19:30:30,240 [DEBUG] streaming main llm answer
+2026-07-16 19:30:50,938 [DEBUG] main.py: Function to save chat history called
+2026-07-16 19:30:50,938 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-16 19:30:50,939 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-16 19:31:03,491 [DEBUG] main.py: llmComs function started
+2026-07-16 19:31:03,491 [DEBUG] main.py: router function started
+2026-07-16 19:31:03,491 [DEBUG] main.py: ollama communication started
+2026-07-16 19:31:05,695 [DEBUG] main.py: ollama communication ended
+2026-07-16 19:31:05,695 [DEBUG] toolManager.py: tool router function started
+2026-07-16 19:31:05,695 [DEBUG] toolManager.py: Using runBash tool
+2026-07-16 19:31:05,695 [DEBUG] runBashCommands.py: runCommands function started
+2026-07-16 19:31:05,695 [DEBUG] runBashCommands.py: loading json file
+2026-07-16 19:31:05,698 [DEBUG] runBashCommands.py: commands executed
+2026-07-16 19:31:05,698 [DEBUG] main.py: Main llm communication started
+2026-07-16 19:31:05,698 [DEBUG] main.py: Main llm communication ended
+2026-07-16 19:31:05,698 [DEBUG] streaming main llm answer
+2026-07-16 19:31:46,687 [DEBUG] main.py: Function to save chat history called
+2026-07-16 19:31:46,687 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-16 19:31:46,688 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-16 19:32:00,971 [DEBUG] main.py: llmComs function started
+2026-07-16 19:32:00,971 [DEBUG] main.py: router function started
+2026-07-16 19:32:00,971 [DEBUG] main.py: ollama communication started
+2026-07-16 19:32:04,717 [DEBUG] main.py: ollama communication ended
+2026-07-16 19:32:04,717 [DEBUG] toolManager.py: tool router function started
+2026-07-16 19:32:04,717 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-16 19:32:04,718 [DEBUG] main.py: Main llm communication started
+2026-07-16 19:32:04,718 [DEBUG] main.py: Main llm communication ended
+2026-07-16 19:32:04,718 [DEBUG] streaming main llm answer
+2026-07-16 19:32:29,934 [DEBUG] main.py: Function to save chat history called
+2026-07-16 19:32:29,934 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-16 19:32:29,935 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-16 19:32:42,859 [DEBUG] main.py: llmComs function started
+2026-07-16 19:32:42,859 [DEBUG] main.py: router function started
+2026-07-16 19:32:42,860 [DEBUG] main.py: ollama communication started
+2026-07-16 19:32:46,472 [DEBUG] main.py: ollama communication ended
+2026-07-16 19:32:46,472 [DEBUG] toolManager.py: tool router function started
+2026-07-16 19:32:46,472 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-16 19:32:46,472 [DEBUG] main.py: Main llm communication started
+2026-07-16 19:32:46,473 [DEBUG] main.py: Main llm communication ended
+2026-07-16 19:32:46,473 [DEBUG] streaming main llm answer
+2026-07-16 19:33:08,125 [DEBUG] main.py: Function to save chat history called
+2026-07-16 19:33:08,125 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-16 19:33:08,125 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-16 19:33:15,904 [DEBUG] main.py: llmComs function started
+2026-07-16 19:33:15,904 [DEBUG] main.py: router function started
+2026-07-16 19:33:15,904 [DEBUG] chatHistoryTools.py: wipe chat history function started
+2026-07-16 19:33:15,905 [DEBUG] chatHistoryTools.py:, wipe chat history function finished
+2026-07-16 19:33:15,905 [DEBUG] Main.py: quit function executed
+2026-07-17 03:24:16,684 [DEBUG] chatHistoryTools.py: load chat history function started
+2026-07-17 03:24:16,685 [DEBUG] chatHistoryTools.py: load chat history function finished
+2026-07-17 03:24:52,294 [DEBUG] chatHistoryTools.py: load chat history function started
+2026-07-17 03:24:52,295 [DEBUG] chatHistoryTools.py: load chat history function finished
+2026-07-17 03:25:35,882 [DEBUG] chatHistoryTools.py: load chat history function started
+2026-07-17 03:25:35,882 [DEBUG] chatHistoryTools.py: load chat history function finished
+2026-07-17 03:25:40,698 [DEBUG] main.py: llmComs function started
+2026-07-17 03:25:40,699 [DEBUG] main.py: router function started
+2026-07-17 03:25:40,699 [DEBUG] main.py: ollama communication started
+2026-07-17 03:26:01,862 [DEBUG] chatHistoryTools.py: load chat history function started
+2026-07-17 03:26:01,862 [DEBUG] chatHistoryTools.py: load chat history function finished
+2026-07-17 03:26:05,044 [DEBUG] main.py: llmComs function started
+2026-07-17 03:26:05,044 [DEBUG] main.py: router function started
+2026-07-17 03:26:05,044 [DEBUG] main.py: ollama communication started
+2026-07-17 03:26:24,609 [DEBUG] main.py: ollama communication ended
+2026-07-17 03:26:24,609 [DEBUG] toolManager.py: tool router function started
+2026-07-17 03:26:24,609 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-17 03:26:24,609 [DEBUG] main.py: Main llm communication started
+2026-07-17 03:26:24,609 [DEBUG] main.py: Main llm communication ended
+2026-07-17 03:26:24,610 [DEBUG] streaming main llm answer
+2026-07-17 03:26:36,444 [DEBUG] main.py: Function to save chat history called
+2026-07-17 03:26:36,444 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-17 03:26:36,444 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-17 03:27:06,844 [DEBUG] main.py: llmComs function started
+2026-07-17 03:27:06,844 [DEBUG] main.py: router function started
+2026-07-17 03:27:06,844 [DEBUG] main.py: ollama communication started
+2026-07-17 03:27:09,586 [DEBUG] main.py: ollama communication ended
+2026-07-17 03:27:09,586 [DEBUG] toolManager.py: tool router function started
+2026-07-17 03:27:09,586 [DEBUG] toolManager.py: Using runBash tool
+2026-07-17 03:27:09,586 [DEBUG] runBashCommands.py: runCommands function started
+2026-07-17 03:27:09,586 [DEBUG] runBashCommands.py: loading json file
+2026-07-17 03:27:09,594 [DEBUG] runBashCommands.py: commands executed
+2026-07-17 03:27:09,595 [DEBUG] main.py: Main llm communication started
+2026-07-17 03:27:09,595 [DEBUG] main.py: Main llm communication ended
+2026-07-17 03:27:09,595 [DEBUG] streaming main llm answer
+2026-07-17 03:28:38,522 [DEBUG] main.py: Function to save chat history called
+2026-07-17 03:28:38,522 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-17 03:28:38,522 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-17 03:29:00,356 [DEBUG] main.py: llmComs function started
+2026-07-17 03:29:00,356 [DEBUG] main.py: router function started
+2026-07-17 03:29:00,356 [DEBUG] main.py: ollama communication started
+2026-07-17 03:29:03,520 [DEBUG] main.py: ollama communication ended
+2026-07-17 03:29:03,520 [DEBUG] toolManager.py: tool router function started
+2026-07-17 03:29:03,520 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-17 03:29:03,521 [DEBUG] main.py: Main llm communication started
+2026-07-17 03:29:03,521 [DEBUG] main.py: Main llm communication ended
+2026-07-17 03:29:03,521 [DEBUG] streaming main llm answer
+2026-07-17 03:29:16,485 [DEBUG] main.py: Function to save chat history called
+2026-07-17 03:29:16,485 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-17 03:29:16,486 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-17 03:30:04,675 [DEBUG] main.py: llmComs function started
+2026-07-17 03:30:04,675 [DEBUG] main.py: router function started
+2026-07-17 03:30:04,675 [DEBUG] main.py: ollama communication started
+2026-07-17 03:30:08,012 [DEBUG] main.py: ollama communication ended
+2026-07-17 03:30:08,012 [DEBUG] toolManager.py: tool router function started
+2026-07-17 03:30:08,012 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-17 03:30:08,013 [DEBUG] main.py: Main llm communication started
+2026-07-17 03:30:08,013 [DEBUG] main.py: Main llm communication ended
+2026-07-17 03:30:08,013 [DEBUG] streaming main llm answer
+2026-07-17 03:30:19,899 [DEBUG] main.py: Function to save chat history called
+2026-07-17 03:30:19,899 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-17 03:30:19,900 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-17 03:30:40,719 [DEBUG] main.py: llmComs function started
+2026-07-17 03:30:40,719 [DEBUG] main.py: router function started
+2026-07-17 03:30:40,719 [DEBUG] main.py: ollama communication started
+2026-07-17 03:30:44,257 [DEBUG] main.py: ollama communication ended
+2026-07-17 03:30:44,257 [DEBUG] toolManager.py: tool router function started
+2026-07-17 03:30:44,257 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-17 03:30:44,258 [DEBUG] main.py: Main llm communication started
+2026-07-17 03:30:44,258 [DEBUG] main.py: Main llm communication ended
+2026-07-17 03:30:44,258 [DEBUG] streaming main llm answer
+2026-07-17 03:30:56,869 [DEBUG] main.py: Function to save chat history called
+2026-07-17 03:30:56,869 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-17 03:30:56,869 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-17 03:31:49,283 [DEBUG] main.py: llmComs function started
+2026-07-17 03:31:49,283 [DEBUG] main.py: router function started
+2026-07-17 03:31:49,283 [DEBUG] main.py: ollama communication started
+2026-07-17 03:31:53,211 [DEBUG] main.py: ollama communication ended
+2026-07-17 03:31:53,211 [DEBUG] toolManager.py: tool router function started
+2026-07-17 03:31:53,211 [DEBUG] toolManager.py: Using runBash tool
+2026-07-17 03:31:53,211 [DEBUG] runBashCommands.py: runCommands function started
+2026-07-17 03:31:53,211 [DEBUG] runBashCommands.py: loading json file
+2026-07-17 03:31:53,215 [DEBUG] main.py: Main llm communication started
+2026-07-17 03:31:53,215 [DEBUG] main.py: Main llm communication ended
+2026-07-17 03:31:53,215 [DEBUG] streaming main llm answer
+2026-07-17 03:31:57,927 [DEBUG] main.py: Function to save chat history called
+2026-07-17 03:31:57,927 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-17 03:31:57,927 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-17 03:32:31,595 [DEBUG] main.py: llmComs function started
+2026-07-17 03:32:31,595 [DEBUG] main.py: router function started
+2026-07-17 03:32:31,595 [DEBUG] main.py: ollama communication started
+2026-07-17 03:32:34,444 [DEBUG] main.py: ollama communication ended
+2026-07-17 03:32:34,445 [DEBUG] toolManager.py: tool router function started
+2026-07-17 03:32:34,445 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-17 03:32:34,445 [DEBUG] main.py: Main llm communication started
+2026-07-17 03:32:34,445 [DEBUG] main.py: Main llm communication ended
+2026-07-17 03:32:34,445 [DEBUG] streaming main llm answer
+2026-07-17 03:32:47,454 [DEBUG] main.py: Function to save chat history called
+2026-07-17 03:32:47,454 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-17 03:32:47,455 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-17 03:33:29,299 [DEBUG] main.py: llmComs function started
+2026-07-17 03:33:29,299 [DEBUG] main.py: router function started
+2026-07-17 03:33:29,299 [DEBUG] chatHistoryTools.py: wipe chat history function started
+2026-07-17 03:33:29,300 [DEBUG] chatHistoryTools.py:, wipe chat history function finished
+2026-07-17 03:33:29,300 [DEBUG] Main.py: quit function executed
+2026-07-17 12:48:56,730 [DEBUG] chatHistoryTools.py: load chat history function started
+2026-07-17 12:48:56,730 [DEBUG] chatHistoryTools.py: load chat history function finished
+2026-07-17 12:48:59,421 [DEBUG] main.py: llmComs function started
+2026-07-17 12:48:59,421 [DEBUG] main.py: router function started
+2026-07-17 12:48:59,421 [DEBUG] chatHistoryTools.py: wipe chat history function started
+2026-07-17 12:48:59,422 [DEBUG] chatHistoryTools.py:, wipe chat history function finished
+2026-07-17 12:48:59,422 [DEBUG] Main.py: quit function executed
+2026-07-17 12:49:04,533 [DEBUG] chatHistoryTools.py: load chat history function started
+2026-07-17 12:49:04,533 [DEBUG] chatHistoryTools.py: load chat history function finished
+2026-07-17 12:49:07,874 [DEBUG] main.py: llmComs function started
+2026-07-17 12:49:07,874 [DEBUG] main.py: router function started
+2026-07-17 12:49:07,874 [DEBUG] main.py: ollama communication started
+2026-07-17 12:49:14,086 [DEBUG] chatHistoryTools.py: load chat history function started
+2026-07-17 12:49:14,086 [DEBUG] chatHistoryTools.py: load chat history function finished
+2026-07-17 12:49:18,151 [DEBUG] main.py: llmComs function started
+2026-07-17 12:49:18,151 [DEBUG] main.py: router function started
+2026-07-17 12:49:18,151 [DEBUG] main.py: ollama communication started
+2026-07-17 12:49:37,677 [DEBUG] main.py: ollama communication ended
+2026-07-17 12:49:37,677 [DEBUG] toolManager.py: tool router function started
+2026-07-17 12:49:37,677 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-17 12:49:37,678 [DEBUG] main.py: Main llm communication started
+2026-07-17 12:49:37,678 [DEBUG] main.py: Main llm communication ended
+2026-07-17 12:49:37,678 [DEBUG] streaming main llm answer
+2026-07-17 12:49:49,684 [DEBUG] main.py: Function to save chat history called
+2026-07-17 12:49:49,684 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-17 12:49:49,684 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-17 12:50:18,726 [DEBUG] main.py: llmComs function started
+2026-07-17 12:50:18,726 [DEBUG] main.py: router function started
+2026-07-17 12:50:18,727 [DEBUG] main.py: ollama communication started
+2026-07-17 12:50:21,192 [DEBUG] main.py: ollama communication ended
+2026-07-17 12:50:21,192 [DEBUG] toolManager.py: tool router function started
+2026-07-17 12:50:21,192 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-17 12:50:21,193 [DEBUG] main.py: Main llm communication started
+2026-07-17 12:50:21,193 [DEBUG] main.py: Main llm communication ended
+2026-07-17 12:50:21,193 [DEBUG] streaming main llm answer
+2026-07-17 12:50:29,066 [DEBUG] main.py: Function to save chat history called
+2026-07-17 12:50:29,066 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-17 12:50:29,066 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-17 12:50:34,082 [DEBUG] main.py: llmComs function started
+2026-07-17 12:50:34,082 [DEBUG] main.py: router function started
+2026-07-17 12:50:34,082 [DEBUG] main.py: ollama communication started
+2026-07-17 12:50:36,553 [DEBUG] main.py: ollama communication ended
+2026-07-17 12:50:36,553 [DEBUG] toolManager.py: tool router function started
+2026-07-17 12:50:36,554 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-17 12:50:36,554 [DEBUG] main.py: Main llm communication started
+2026-07-17 12:50:36,554 [DEBUG] main.py: Main llm communication ended
+2026-07-17 12:50:36,554 [DEBUG] streaming main llm answer
+2026-07-17 12:50:47,699 [DEBUG] main.py: Function to save chat history called
+2026-07-17 12:50:47,699 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-17 12:50:47,700 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-17 12:50:55,162 [DEBUG] main.py: llmComs function started
+2026-07-17 12:50:55,163 [DEBUG] main.py: router function started
+2026-07-17 12:50:55,163 [DEBUG] main.py: ollama communication started
+2026-07-17 12:50:57,732 [DEBUG] main.py: ollama communication ended
+2026-07-17 12:50:57,732 [DEBUG] toolManager.py: tool router function started
+2026-07-17 12:50:57,732 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-17 12:50:57,732 [DEBUG] main.py: Main llm communication started
+2026-07-17 12:50:57,732 [DEBUG] main.py: Main llm communication ended
+2026-07-17 12:50:57,732 [DEBUG] streaming main llm answer
+2026-07-17 12:51:04,072 [DEBUG] main.py: Function to save chat history called
+2026-07-17 12:51:04,072 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-17 12:51:04,072 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-17 12:51:17,953 [DEBUG] main.py: llmComs function started
+2026-07-17 12:51:17,954 [DEBUG] main.py: router function started
+2026-07-17 12:51:17,954 [DEBUG] chatHistoryTools.py: wipe chat history function started
+2026-07-17 12:51:17,955 [DEBUG] chatHistoryTools.py:, wipe chat history function finished
+2026-07-17 12:51:17,955 [DEBUG] Main.py: quit function executed
+2026-07-17 12:51:21,644 [DEBUG] chatHistoryTools.py: load chat history function started
+2026-07-17 12:51:21,644 [DEBUG] chatHistoryTools.py: load chat history function finished
+2026-07-17 12:51:27,912 [DEBUG] main.py: llmComs function started
+2026-07-17 12:51:27,913 [DEBUG] main.py: router function started
+2026-07-17 12:51:27,913 [DEBUG] main.py: ollama communication started
+2026-07-17 12:51:31,630 [DEBUG] main.py: ollama communication ended
+2026-07-17 12:51:31,630 [DEBUG] toolManager.py: tool router function started
+2026-07-17 12:51:31,630 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-17 12:51:31,630 [DEBUG] main.py: Main llm communication started
+2026-07-17 12:51:31,630 [DEBUG] main.py: Main llm communication ended
+2026-07-17 12:51:31,630 [DEBUG] streaming main llm answer
+2026-07-17 12:51:39,180 [DEBUG] main.py: Function to save chat history called
+2026-07-17 12:51:39,180 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-17 12:51:39,181 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-17 12:51:45,698 [DEBUG] main.py: llmComs function started
+2026-07-17 12:51:45,699 [DEBUG] main.py: router function started
+2026-07-17 12:51:45,699 [DEBUG] main.py: ollama communication started
+2026-07-17 12:51:47,716 [DEBUG] main.py: ollama communication ended
+2026-07-17 12:51:47,716 [DEBUG] toolManager.py: tool router function started
+2026-07-17 12:51:47,716 [DEBUG] toolManager.py: Using runBash tool
+2026-07-17 12:51:47,716 [DEBUG] runBashCommands.py: runCommands function started
+2026-07-17 12:51:47,716 [DEBUG] runBashCommands.py: loading json file
+2026-07-17 12:51:47,719 [DEBUG] runBashCommands.py: commands executed
+2026-07-17 12:51:47,720 [DEBUG] main.py: Main llm communication started
+2026-07-17 12:51:47,720 [DEBUG] main.py: Main llm communication ended
+2026-07-17 12:51:47,720 [DEBUG] streaming main llm answer
+2026-07-17 12:52:06,333 [DEBUG] main.py: Function to save chat history called
+2026-07-17 12:52:06,333 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-17 12:52:06,333 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-17 12:52:11,098 [DEBUG] main.py: llmComs function started
+2026-07-17 12:52:11,098 [DEBUG] main.py: router function started
+2026-07-17 12:52:11,098 [DEBUG] chatHistoryTools.py: wipe chat history function started
+2026-07-17 12:52:11,099 [DEBUG] chatHistoryTools.py:, wipe chat history function finished
+2026-07-17 12:52:11,099 [DEBUG] Main.py: quit function executed
+2026-07-17 12:52:14,998 [DEBUG] chatHistoryTools.py: load chat history function started
+2026-07-17 12:52:14,998 [DEBUG] chatHistoryTools.py: load chat history function finished
+2026-07-17 12:52:28,462 [DEBUG] main.py: llmComs function started
+2026-07-17 12:52:28,462 [DEBUG] main.py: router function started
+2026-07-17 12:52:28,462 [DEBUG] main.py: ollama communication started
+2026-07-17 12:52:31,526 [DEBUG] main.py: ollama communication ended
+2026-07-17 12:52:31,526 [DEBUG] toolManager.py: tool router function started
+2026-07-17 12:52:31,526 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-17 12:52:31,526 [DEBUG] main.py: Main llm communication started
+2026-07-17 12:52:31,527 [DEBUG] main.py: Main llm communication ended
+2026-07-17 12:52:31,527 [DEBUG] streaming main llm answer
+2026-07-17 12:52:41,371 [DEBUG] main.py: Function to save chat history called
+2026-07-17 12:52:41,371 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-17 12:52:41,371 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-17 12:52:45,650 [DEBUG] main.py: llmComs function started
+2026-07-17 12:52:45,650 [DEBUG] main.py: router function started
+2026-07-17 12:52:45,650 [DEBUG] main.py: ollama communication started
+2026-07-17 12:52:48,172 [DEBUG] main.py: ollama communication ended
+2026-07-17 12:52:48,172 [DEBUG] toolManager.py: tool router function started
+2026-07-17 12:52:48,172 [DEBUG] toolManager.py: Using runBash tool
+2026-07-17 12:52:48,172 [DEBUG] runBashCommands.py: runCommands function started
+2026-07-17 12:52:48,172 [DEBUG] runBashCommands.py: loading json file
+2026-07-17 12:52:48,177 [DEBUG] main.py: Main llm communication started
+2026-07-17 12:52:48,177 [DEBUG] main.py: Main llm communication ended
+2026-07-17 12:52:48,177 [DEBUG] streaming main llm answer
+2026-07-17 12:53:00,647 [DEBUG] main.py: Function to save chat history called
+2026-07-17 12:53:00,647 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-17 12:53:00,647 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-17 12:53:08,392 [DEBUG] main.py: llmComs function started
+2026-07-17 12:53:08,392 [DEBUG] main.py: router function started
+2026-07-17 12:53:08,393 [DEBUG] main.py: ollama communication started
+2026-07-17 12:53:10,582 [DEBUG] main.py: ollama communication ended
+2026-07-17 12:53:10,582 [DEBUG] toolManager.py: tool router function started
+2026-07-17 12:53:10,582 [DEBUG] toolManager.py: Using runBash tool
+2026-07-17 12:53:10,582 [DEBUG] runBashCommands.py: runCommands function started
+2026-07-17 12:53:10,582 [DEBUG] runBashCommands.py: loading json file
+2026-07-17 12:53:22,499 [DEBUG] chatHistoryTools.py: load chat history function started
+2026-07-17 12:53:22,500 [DEBUG] chatHistoryTools.py: load chat history function finished
+2026-07-17 12:53:29,112 [DEBUG] main.py: llmComs function started
+2026-07-17 12:53:29,113 [DEBUG] main.py: router function started
+2026-07-17 12:53:29,113 [DEBUG] main.py: ollama communication started
+2026-07-17 12:53:31,962 [DEBUG] main.py: ollama communication ended
+2026-07-17 12:53:31,963 [DEBUG] toolManager.py: tool router function started
+2026-07-17 12:53:31,963 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-17 12:53:31,963 [DEBUG] main.py: Main llm communication started
+2026-07-17 12:53:31,963 [DEBUG] main.py: Main llm communication ended
+2026-07-17 12:53:31,963 [DEBUG] streaming main llm answer
+2026-07-17 12:53:53,379 [DEBUG] main.py: Function to save chat history called
+2026-07-17 12:53:53,379 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-17 12:53:53,379 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-17 12:54:00,347 [DEBUG] main.py: llmComs function started
+2026-07-17 12:54:00,347 [DEBUG] main.py: router function started
+2026-07-17 12:54:00,347 [DEBUG] chatHistoryTools.py: wipe chat history function started
+2026-07-17 12:54:00,348 [DEBUG] chatHistoryTools.py:, wipe chat history function finished
+2026-07-17 12:54:00,348 [DEBUG] Main.py: quit function executed
+2026-07-17 12:57:14,778 [DEBUG] chatHistoryTools.py: load chat history function started
+2026-07-17 12:57:14,779 [DEBUG] chatHistoryTools.py: load chat history function finished
+2026-07-17 12:57:18,164 [DEBUG] main.py: llmComs function started
+2026-07-17 12:57:18,164 [DEBUG] main.py: router function started
+2026-07-17 12:57:18,165 [DEBUG] main.py: ollama communication started
+2026-07-17 12:57:20,467 [DEBUG] main.py: ollama communication ended
+2026-07-17 12:57:20,467 [DEBUG] toolManager.py: tool router function started
+2026-07-17 12:57:20,467 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-17 12:57:20,467 [DEBUG] main.py: Main llm communication started
+2026-07-17 12:57:20,468 [DEBUG] main.py: Main llm communication ended
+2026-07-17 12:57:20,468 [DEBUG] streaming main llm answer
+2026-07-17 12:57:26,174 [DEBUG] main.py: Function to save chat history called
+2026-07-17 12:57:26,174 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-17 12:57:26,175 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-17 12:57:31,183 [DEBUG] main.py: llmComs function started
+2026-07-17 12:57:31,183 [DEBUG] main.py: router function started
+2026-07-17 12:57:31,183 [DEBUG] main.py: ollama communication started
+2026-07-17 12:57:33,576 [DEBUG] main.py: ollama communication ended
+2026-07-17 12:57:33,576 [DEBUG] toolManager.py: tool router function started
+2026-07-17 12:57:33,576 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-17 12:57:33,577 [DEBUG] main.py: Main llm communication started
+2026-07-17 12:57:33,577 [DEBUG] main.py: Main llm communication ended
+2026-07-17 12:57:33,577 [DEBUG] streaming main llm answer
+2026-07-17 12:57:39,878 [DEBUG] main.py: Function to save chat history called
+2026-07-17 12:57:39,878 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-17 12:57:39,878 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-17 12:57:54,284 [DEBUG] main.py: llmComs function started
+2026-07-17 12:57:54,284 [DEBUG] main.py: router function started
+2026-07-17 12:57:54,284 [DEBUG] main.py: ollama communication started
+2026-07-17 12:57:57,358 [DEBUG] main.py: ollama communication ended
+2026-07-17 12:57:57,359 [DEBUG] toolManager.py: tool router function started
+2026-07-17 12:57:57,359 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-17 12:57:57,359 [DEBUG] main.py: Main llm communication started
+2026-07-17 12:57:57,359 [DEBUG] main.py: Main llm communication ended
+2026-07-17 12:57:57,359 [DEBUG] streaming main llm answer
+2026-07-17 12:58:03,492 [DEBUG] main.py: Function to save chat history called
+2026-07-17 12:58:03,492 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-17 12:58:03,492 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-17 12:58:21,052 [DEBUG] main.py: llmComs function started
+2026-07-17 12:58:21,052 [DEBUG] main.py: router function started
+2026-07-17 12:58:21,053 [DEBUG] main.py: ollama communication started
+2026-07-17 12:58:25,321 [DEBUG] main.py: ollama communication ended
+2026-07-17 12:58:25,321 [DEBUG] toolManager.py: tool router function started
+2026-07-17 12:58:25,322 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-17 12:58:25,322 [DEBUG] main.py: Main llm communication started
+2026-07-17 12:58:25,322 [DEBUG] main.py: Main llm communication ended
+2026-07-17 12:58:25,322 [DEBUG] streaming main llm answer
+2026-07-17 12:58:42,597 [DEBUG] main.py: Function to save chat history called
+2026-07-17 12:58:42,597 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-17 12:58:42,597 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-17 12:58:53,897 [DEBUG] main.py: llmComs function started
+2026-07-17 12:58:53,898 [DEBUG] main.py: router function started
+2026-07-17 12:58:53,898 [DEBUG] main.py: ollama communication started
+2026-07-17 12:58:57,365 [DEBUG] main.py: ollama communication ended
+2026-07-17 12:58:57,365 [DEBUG] toolManager.py: tool router function started
+2026-07-17 12:58:57,365 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-17 12:58:57,365 [DEBUG] main.py: Main llm communication started
+2026-07-17 12:58:57,365 [DEBUG] main.py: Main llm communication ended
+2026-07-17 12:58:57,365 [DEBUG] streaming main llm answer
+2026-07-17 12:59:05,911 [DEBUG] main.py: Function to save chat history called
+2026-07-17 12:59:05,912 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-17 12:59:05,912 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-17 13:00:03,518 [DEBUG] chatHistoryTools.py: load chat history function started
+2026-07-17 13:00:03,518 [DEBUG] chatHistoryTools.py: load chat history function finished
+2026-07-17 13:00:09,402 [DEBUG] main.py: llmComs function started
+2026-07-17 13:00:09,402 [DEBUG] main.py: router function started
+2026-07-17 13:00:09,402 [DEBUG] chatHistoryTools.py: wipe chat history function started
+2026-07-17 13:00:09,403 [DEBUG] chatHistoryTools.py:, wipe chat history function finished
+2026-07-17 13:00:09,403 [DEBUG] Main.py: quit function executed
+2026-07-17 13:00:24,032 [DEBUG] chatHistoryTools.py: load chat history function started
+2026-07-17 13:00:24,033 [DEBUG] chatHistoryTools.py: load chat history function finished
+2026-07-17 13:00:26,016 [DEBUG] main.py: llmComs function started
+2026-07-17 13:00:26,017 [DEBUG] main.py: router function started
+2026-07-17 13:00:26,017 [DEBUG] main.py: ollama communication started
+2026-07-17 13:00:26,019 [DEBUG] chatHistoryTools.py: wipe chat history function started
+2026-07-17 13:00:26,020 [DEBUG] chatHistoryTools.py:, wipe chat history function finished
+2026-07-17 13:00:26,020 [DEBUG] Main.py: quit function executed
+2026-07-17 13:01:41,908 [DEBUG] chatHistoryTools.py: load chat history function started
+2026-07-17 13:01:41,908 [DEBUG] chatHistoryTools.py: load chat history function finished
+2026-07-17 13:01:43,021 [DEBUG] main.py: llmComs function started
+2026-07-17 13:01:43,021 [DEBUG] main.py: router function started
+2026-07-17 13:01:43,021 [DEBUG] main.py: ollama communication started
+2026-07-17 13:01:43,023 [DEBUG] chatHistoryTools.py: wipe chat history function started
+2026-07-17 13:01:43,023 [DEBUG] chatHistoryTools.py:, wipe chat history function finished
+2026-07-17 13:01:43,024 [DEBUG] Main.py: quit function executed
+2026-07-17 13:01:52,558 [DEBUG] chatHistoryTools.py: load chat history function started
+2026-07-17 13:01:52,558 [DEBUG] chatHistoryTools.py: load chat history function finished
+2026-07-17 13:01:57,340 [DEBUG] main.py: llmComs function started
+2026-07-17 13:01:57,340 [DEBUG] main.py: router function started
+2026-07-17 13:01:57,340 [DEBUG] main.py: ollama communication started
+2026-07-17 13:02:13,822 [DEBUG] main.py: ollama communication ended
+2026-07-17 13:02:13,822 [DEBUG] toolManager.py: tool router function started
+2026-07-17 13:02:13,822 [DEBUG] toolManager.py: Using llmComs tool
+2026-07-17 13:02:13,823 [DEBUG] main.py: Main llm communication started
+2026-07-17 13:02:13,823 [DEBUG] main.py: Main llm communication ended
+2026-07-17 13:02:13,823 [DEBUG] streaming main llm answer
+2026-07-17 13:02:26,601 [DEBUG] main.py: Function to save chat history called
+2026-07-17 13:02:26,601 [DEBUG] chatHistoryTools.py: save chat history function started
+2026-07-17 13:02:26,602 [DEBUG] chatHistoryTools.py: save chat history function finished
+2026-07-17 13:03:30,716 [DEBUG] chatHistoryTools.py: load chat history function started
+2026-07-17 13:03:30,716 [DEBUG] chatHistoryTools.py: load chat history function finished
+2026-07-17 13:03:31,688 [DEBUG] main.py: llmComs function started
+2026-07-17 13:03:31,688 [DEBUG] main.py: router function started
+2026-07-17 13:03:31,689 [DEBUG] main.py: ollama communication started
+2026-07-17 13:03:31,690 [DEBUG] chatHistoryTools.py: wipe chat history function started
+2026-07-17 13:03:31,691 [DEBUG] chatHistoryTools.py:, wipe chat history function finished
+2026-07-17 13:03:31,691 [DEBUG] Main.py: quit function executed

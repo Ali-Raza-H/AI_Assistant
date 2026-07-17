@@ -35,3 +35,5 @@ Thumbs.db
 
 # DEV too
 .dev.json
+
+/logs
