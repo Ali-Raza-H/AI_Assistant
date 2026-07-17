@@ -30,7 +30,7 @@ def router(userInput):
     
     log("debug", "main.py: ollama communication started")
     response = ollama.chat(
-        model = "dolphin-llama3:8b",
+        model = "qwen2.5:1.5b-instruct",
         messages=[
             {
                 "role": "system",
@@ -65,7 +65,7 @@ def llmComs(message):
 
     log("debug", "main.py: Main llm communication started")    
     response = ollama.chat(
-        model = "dolphin-llama3:8b",
+        model = "llama3.1:8b-instruct-q4_K_M",
         messages = [
             {
                 "role": "system",
@@ -73,7 +73,7 @@ def llmComs(message):
             },
             {
                 "role": "user",
-                "content": str(routerResponse),
+                "content": str(f"Router's response: {routerResponse} Users messege: {message}"),
             }
         ],
         stream = True
