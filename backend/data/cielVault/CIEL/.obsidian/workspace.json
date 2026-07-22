@@ -1,0 +1,203 @@
+{
+  "main": {
+    "id": "5a6c2fd7785b24f3",
+    "type": "split",
+    "children": [
+      {
+        "id": "458100910f966e42",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "d3abc73ed35a631d",
+            "type": "leaf",
+            "state": {
+              "type": "excalidraw",
+              "state": {
+                "file": "Excalidraw/CIEL Architecture 1.md"
+              },
+              "icon": "excalidraw-icon",
+              "title": "CIEL Architecture 1"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "c382c45114528ff4",
+    "type": "split",
+    "children": [
+      {
+        "id": "7b6f5238e819c784",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "260b13734bfda013",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "3bcc961afea0f4d2",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "76feb77730fd900a",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "63b3deac7fdf6ab7",
+    "type": "split",
+    "children": [
+      {
+        "id": "a01fc05f9eacfb2d",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "8c289ef2113f9b8c",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Excalidraw/CIEL Architecture 1.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for CIEL Architecture 1"
+            }
+          },
+          {
+            "id": "5e2a7d906630a30d",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Excalidraw/CIEL Architecture 1.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from CIEL Architecture 1"
+            }
+          },
+          {
+            "id": "6d21f0f40c7b2cd1",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "3d46c714f5f57048",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "f59e7fc69530ecfa",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Excalidraw/CIEL Architecture 1.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of CIEL Architecture 1"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false,
+      "obsidian-excalidraw-plugin:New drawing": false
+    }
+  },
+  "active": "d3abc73ed35a631d",
+  "lastOpenFiles": [
+    "Excalidraw/CIEL Architecture 2 Workflow.md",
+    "Excalidraw/CIEL Architecture 2 Data flow.md",
+    "Excalidraw/CIEL Architecture 2 Decision Process.md",
+    "Excalidraw/Drawing 2026-07-21 20.00.33.excalidraw.md",
+    "C.I.E.L Architecture V1.md",
+    "Excalidraw/Drawing 2026-07-21 19.02.37.excalidraw.md",
+    "CIEL Architecture V2.md",
+    "codeBase/routerPrompt.md",
+    "Excalidraw/CIEL Architecture 1.md",
+    "codeBase",
+    "Excalidraw/CIEL File Structure 1.md",
+    "Excalidraw/Drawing 2026-07-21 16.46.04.excalidraw.md",
+    "Name Of Your Excalidraw Drawing.md",
+    "Excalidraw/Drawing 2026-07-21 16.35.59.excalidraw.md",
+    "Excalidraw"
+  ]
+}
