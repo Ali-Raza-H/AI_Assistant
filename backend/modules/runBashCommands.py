@@ -1,7 +1,7 @@
 import json
 import subprocess
 from src.tools.logger import log
-from src.tools.PATHS import COMMANDS_PATH
+from src.tools.vars import COMMANDS_PATH
 
 def runCommands():
     log("debug", "runBashCommands.py: runCommands function started")

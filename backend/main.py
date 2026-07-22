@@ -1,12 +1,20 @@
 import ollama
-from src.tools.chatHistoryTools import wipeChatHistory, saveChatHistory
+from src.tools.chatHistoryTools import wipeChatHistory, saveChatHistory, loadChatHistory
 from modules.toolManager import toolRouter
 from src.tools.logger import log
-from src.tools.prompts import routerPrompt, llmPrompt
+from src.tools.vars import routerPrompt, llmPrompt, nvAPI, cielModel, provider, gAPI
+from src.llmCom import nvidiaComm, geminiComm
+
 
 #System prompts
 newRouterPrompt = routerPrompt
 systemPrompt = llmPrompt
+
+
+#NVIDIA Settings
+aKey = gAPI
+prov = provider
+model = cielModel
 
 log("info", "Main.py: Variables created")
 
@@ -59,37 +67,27 @@ def router(userInput):
 def llmComs(message):
     log("debug", "main.py: llmComs function started")
     
+    
     routerResponse = router(message)
+    
+    
     log("info", f"main.py: llmComs function router function output recived: {routerResponse}")
+    log("debug", "main.py: Main llm communication started")
+    
+    
+    chatHistory = loadChatHistory()
+    systemPrompt = f"{llmPrompt} -Chat Hisotry: {chatHistory}"
+
+    message = f"Router Response: {routerResponse}, User's message: {message}"
+    #fullResponse = nvidiaComm(aKey, prov, model, systemPrompt, message)
+    fullResponse = geminiComm(aKey, prov, model, systemPrompt, message)
 
 
-    log("debug", "main.py: Main llm communication started")    
-    response = ollama.chat(
-        model = "llama3.1:8b-instruct-q4_K_M",
-        messages = [
-            {
-                "role": "system",
-                "content": str(systemPrompt)
-            },
-            {
-                "role": "user",
-                "content": str(f"Router's response: {routerResponse} Users messege: {message}"),
-            }
-        ],
-        stream = True
-    )
     log("debug", "main.py: Main llm communication ended")
-    
-    
     log("debug", "streaming main llm answer")
-    fullResponse = ""
-    for chunk in response:
-        if 'message' in chunk:
-            content = chunk['message']['content']
-            fullResponse += content
-            print(content, end='', flush=True)
-    
     log("debug", "main.py: Function to save chat history called")
+    
+    
     saveChatHistory(message, fullResponse)
 
 

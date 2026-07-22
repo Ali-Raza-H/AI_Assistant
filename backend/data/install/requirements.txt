@@ -1,2 +1,4 @@
 ollama
 openai
+dotenv
+google-genai

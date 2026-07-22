@@ -1,6 +1,6 @@
 import json
 from modules.runBashCommands import runCommands
-from src.tools.PATHS import COMMANDS_PATH
+from src.tools.vars import COMMANDS_PATH
 from src.tools.jsonTools import fixJson
 from src.tools.logger import log
 

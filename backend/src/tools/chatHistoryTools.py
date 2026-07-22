@@ -1,6 +1,6 @@
 import json
 from src.tools.logger import log
-from src.tools.PATHS import CHAT_HISTORY_PATH
+from src.tools.vars import CHAT_HISTORY_PATH
 
 
 historyJsonPath = CHAT_HISTORY_PATH
@@ -12,7 +12,7 @@ def loadChatHistory():
     
     with open(historyJsonPath, 'r') as jsonDataRead:
         chatHistory = json.load(jsonDataRead)
-        jsonData.append(chatHistory)
+        #jsonData.append(chatHistory)
         log("debug", f"{file} load chat history function finished")
         log("info", f"{file} Chat history return {jsonData}")
         
