@@ -1,5 +1,6 @@
 import json
 import ast
+from src.tools.logger import log
 
 
 def fixJson(inpJson):
