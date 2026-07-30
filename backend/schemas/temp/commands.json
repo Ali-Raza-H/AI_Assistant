@@ -1,1 +1,0 @@
-{"action": "grep -r 'def' . | awk '{if ($1 ~ /[a-zA-Z][a-zA-Z0-9]*$/){print $0}}' | sort | uniq > modularity.txt && ls -lR"}

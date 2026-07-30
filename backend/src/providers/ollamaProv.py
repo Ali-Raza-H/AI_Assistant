@@ -2,11 +2,11 @@ import time
 
 import ollama
 from src.tools.logger import log
-from src.tools.settings import ollamaCielModel
+from src.tools.settings import ollamaCielModel, ollamaRouterModel
 
 # Variables
 file = "ollamaProv.py"
-model = ollamaCielModel
+model = ollamaRouterModel
 
 
 def ollamaComm(sysMsg, usrMsg, isStreaming):

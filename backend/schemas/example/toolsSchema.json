@@ -1,0 +1,7 @@
+{
+    "runBash": {
+        "description": "Runs Bash commands on the user's Arch Linux computer.",
+        "useCase": "Use when the user asks to run a command, inspect the system, manage files, open apps, or perform an action that requires the terminal.",
+        "input": "A valid Bash command."
+    }
+}

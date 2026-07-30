@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-
 #API KEYS
 nvAPI = os.getenv("NVIDIA_API")
 gAPI = os.getenv("GEMINI_API")
@@ -25,9 +24,11 @@ gProv = os.getenv("GEMINI_PROV")
 
 
 #PATHS
-CHAT_HISTORY_PATH = "backend/schemas/chatHistory.json"
-TOOLS_SCHEMA_PATH = "backend/schemas/toolsSchema.json"
-COMMANDS_PATH = "backend/schemas/temp/commands.json"
+CHAT_HISTORY_PATH = "backend/schemas/history/chatHistory.json"
+ROUTER_HISTORY_PATH = "backend/schemas/history/routerHistory.json"
+TOOLS_SCHEMA_PATH = "backend/schemas/example/toolsSchema.json"
+COMMANDS_PATH = "backend/schemas/runTime/routerOut.json"
+
 
 #Log paths
 DEBUG_LOG="backend/data/logs/debug.log"
@@ -37,15 +38,15 @@ ERROR_LOG="backend/data/logs/error.log"
 
 # Data for prompts
 dateTimeNow = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-with open("backend/schemas/toolsSchema.json", "r") as f:
+with open(TOOLS_SCHEMA_PATH, "r") as f:
   toolDat = json.load(f)
 
 
 
 
-#===================
-#    LLM PROMPTS   #
-#===================
+#==================#
+#   ROUTERPROMPT   #
+#==================#
 
 routerPrompt = f"""
 You are an AI TOOL ROUTER.
@@ -149,7 +150,7 @@ IMPORTANT RULES
 
 1. Never invent shell commands.
 
-2. Never choose runBash unless the user explicitly wants something executed.
+2. Only use commands that are available on arch linux
 
 3. If there is ANY uncertainty, choose llmCom.
 
@@ -177,7 +178,20 @@ Output schema:
   "tool": "runBash | llmCom",
   "action": "<command OR original message>"
 }}
+
+
+ROUTER HISTORY:
+
 """
+
+
+
+
+##############################
+#       CIEL PROMPT          #
+##############################
+
+
 
 llmPrompt = f"""
 You are CIEL, which stands for Central Intelligence and Execution Layer.

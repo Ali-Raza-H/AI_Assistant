@@ -4,3 +4,8 @@
 
 ## Architecture Version 2
 
+
+
+USER MESSAGE - ROUTER 
+
+ROUTER: 
