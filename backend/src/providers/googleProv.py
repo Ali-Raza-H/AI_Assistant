@@ -1,6 +1,5 @@
 import os
 
-from openai import OpenAI
 from src.tools.logger import log
 from src.tools.settings import gAPI, gCIEL, gProv
 
@@ -11,6 +10,8 @@ FILE = "googleProv.py"
 
 
 def geminiComm(sysPrompt, usrPrompt, isStreaming):
+    from openai import OpenAI
+
 
     log("debug", f"{FILE}: Gemini Communication function started")
     log("debug", f"{FILE}: Setting up client settings")

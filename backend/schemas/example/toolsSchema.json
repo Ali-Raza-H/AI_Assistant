@@ -3,5 +3,10 @@
         "description": "Runs Bash commands on the user's Arch Linux computer.",
         "useCase": "Use when the user asks to run a command, inspect the system, manage files, open apps, or perform an action that requires the terminal.",
         "input": "A valid Bash command."
+    },
+    "llmCom": {
+        "description": "Passes the original user request to the main language model.",
+        "useCase": "Use for conversation, questions, explanations, writing, and anything that does not require a terminal operation.",
+        "input": "The exact original user message."
     }
 }

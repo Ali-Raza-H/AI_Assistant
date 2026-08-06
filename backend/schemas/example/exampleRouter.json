@@ -1,10 +1,12 @@
 {
     "flags": {
-        "isLooping": true,
-        "doRemember": true
+        "enableRouterHistory": true,
+        "continueLoop": true
     },
 
-    "tools": {
-        "runBash": ["ls", "pwd", "tree -d"]
-    }
+    "tools": [
+        {"tool": "runBash", "action": "ls"},
+        {"tool": "runBash", "action": "pwd"},
+        {"tool": "runBash", "action": "tree -d"}
+    ]
 }

@@ -1,33 +1,59 @@
-import json
+"""Shell tool implementation used by the orchestrator."""
+
+from __future__ import annotations
+
 import subprocess
+import json
+from typing import Any
 
 from src.tools.logger import log
 from src.tools.settings import COMMANDS_PATH
 
 
-def runCommands():
-    log("debug", "runBashCommands.py: runCommands function started")
+def runCommands(command: str | None = None) -> dict[str, Any]:
+    """Run one shell command and return a serializable result."""
 
-    log("debug", "runBashCommands.py: loading json file")
-    with open(COMMANDS_PATH, "r") as f:
-        jsonReturn = json.load(f)
-
-        log("info", f"runBashCommands.py: JSON Loaded {jsonReturn}")
-
-    for runBash in jsonReturn:
+    if command is None:
         try:
-            commandsOutput = subprocess.check_output(jsonReturn[runBash], shell=True)
+            with open(COMMANDS_PATH, "r", encoding="utf-8") as data_file:
+                saved_output = json.load(data_file)
+            if isinstance(saved_output, dict):
+                command = saved_output.get("action")
+        except (FileNotFoundError, json.JSONDecodeError):
+            command = None
 
-            log("debug", "runBashCommands.py: commands executed")
-            log(
-                "info", f"runBashCommands.py: executed commands output {commandsOutput}"
-            )
+    if not command:
+        return {
+            "success": False,
+            "output": "No command was provided.",
+            "returnCode": 2,
+        }
 
-            return commandsOutput
+    log("debug", f"runBashCommands.py: executing command {command}")
+    if not isinstance(command, str):
+        return {
+            "success": False,
+            "output": "The command must be a string.",
+            "returnCode": 2,
+        }
 
-        except Exception as e:
-            log(
-                "error",
-                f"runbashCommands.py: Error encountered when running commands {e}",
-            )
-            print("Error encounterd, Check logs")
+    try:
+        completed = subprocess.run(
+            command,
+            shell=True,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    except OSError as exc:
+        log("error", f"runBashCommands.py: command failed to start: {exc}")
+        return {"success": False, "output": str(exc), "returnCode": 1}
+
+    output = completed.stdout or completed.stderr
+    result = {
+        "success": completed.returncode == 0,
+        "output": output.rstrip(),
+        "returnCode": completed.returncode,
+    }
+    log("info", f"runBashCommands.py: command result {result}")
+    return result

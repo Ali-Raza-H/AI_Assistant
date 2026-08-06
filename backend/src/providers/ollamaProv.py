@@ -1,6 +1,5 @@
 import time
 
-import ollama
 from src.tools.logger import log
 from src.tools.settings import ollamaCielModel, ollamaRouterModel
 
@@ -10,6 +9,8 @@ model = ollamaRouterModel
 
 
 def ollamaComm(sysMsg, usrMsg, isStreaming):
+    import ollama
+
     log("DEBUG", f"{file}: ollama provider function started")
 
     log("DEBUG", f"{file}: Ollama chat started")

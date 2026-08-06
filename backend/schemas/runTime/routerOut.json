@@ -1,0 +1,12 @@
+{
+  "flags": {
+    "enableRouterHistory": false,
+    "continueLoop": false
+  },
+  "tools": [
+    {
+      "tool": "runBash",
+      "action": "find . -type f -name '*.py' -exec cat {} +"
+    }
+  ]
+}
