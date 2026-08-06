@@ -42,3 +42,4 @@ logs/
 .log
 
 cielVault/
+backend/test/

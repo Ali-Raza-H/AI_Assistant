@@ -15,7 +15,7 @@ gAPI = os.getenv("GEMINI_API")
 gCIEL = os.getenv("GOOGLE_CIEL_MODEL")
 nvCIEL = os.getenv("NVIDIA_CIEL_MODEL")
 
-ollamaModel = os.getenv("OLLAMA_ROUTER_MODEL")
+ollamaRouterModel = os.getenv("OLLAMA_ROUTER_MODEL")
 ollamaCielModel = os.getenv("OLLAMA_CIEL_MODEL")
 
 #PROVIDERS
