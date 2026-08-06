@@ -22,13 +22,10 @@ def toolRouter(routerInput):
 
             return runCommands()
 
-        elif inputJson["tool"] == "llmCom":
-            log("debug", "toolManager.py: Using llmComs tool")
+        elif inputJson["tool"] == "None":
+            log("debug", "toolManager.py: Using no tool")
 
-            userMsg = inputJson["action"]
-            log("info", f"toolManager.py: llmComs returning {userMsg}")
-
-            return userMsg
+            return "no tool used"
 
     except json.JSONDecodeError:
         log("error", f"toolManager.py: json.JSONDecodeError {routerInput}")

@@ -10,7 +10,8 @@ class flags:
 
     def setLoopState(state):
         log("info", f"{file}: Setting Loop state to {state}")
-        flag.isLooping = state
+        flags.isLooping = state
 
     def setMemState(state):
         log("info" f"{file}: Setting Router History state to {state}")
+        flags.doRemember = state

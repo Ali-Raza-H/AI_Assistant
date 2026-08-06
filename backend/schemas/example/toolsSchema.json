@@ -4,7 +4,7 @@
         "useCase": "Use when the user asks to run a command, inspect the system, manage files, open apps, or perform an action that requires the terminal.",
         "input": "A valid Bash command."
     },
-    "llmCom": {
+    "None": {
         "description": "Passes the original user request to the main language model.",
         "useCase": "Use for conversation, questions, explanations, writing, and anything that does not require a terminal operation.",
         "input": "The exact original user message."
