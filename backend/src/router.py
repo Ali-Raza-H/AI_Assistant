@@ -26,6 +26,15 @@ def loadRouterHistory():
     return routerHistory
 
 
+#Function to handle quit command
+
+def quitCommand():
+    wipeChatHistory()
+    print("Goodbye")
+    log("debug", "Main.py: quit function executed")
+    exit()
+
+
 
 
 #####################################
@@ -35,13 +44,21 @@ def loadRouterHistory():
 
 def router(userMsg):
 
-    log("debug", f"{file}: Router function started")
-    log("info", f"{file}: Router function input {userMsg}")
+    # Handle quit command
+    if userMsg == "/quit":
+        quitCommand()
+        return
 
+
+    #Setting valuse that will go into the llm Communication
     userInp = f"User's Input: {userMsg}"
-
-    log("debug", f"{file}: Ollama Communication started")
-    log("info", f"{file}: Data to be sent to ollama -- user's message - {userInp}")
+    if doRemember == True:
+        routerHistory = loadRouterHistory
+        sysPrompt += routerHistory
+    else:
+        sysPrompt = routerPrompt
 
     routerOut = ollamaComm(sysPrompt, userInp, False)
-    
+
+    toolAns = toolRouter(routerOut)
+    return toolAns

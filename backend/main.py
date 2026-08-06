@@ -80,6 +80,12 @@ def llmComs(message):
 
 
 def main():
+
+    global isLooping doRemember
+
+    isLooping = True
+    doRemember = False
+
     try:
         while True:
             print("")
