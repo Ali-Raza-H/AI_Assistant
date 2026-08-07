@@ -8,10 +8,19 @@ class flags:
     isLooping = True
     doRemember = False
 
-    def setLoopState(state):
-        log("info", f"{file}: Setting Loop state to {state}")
-        flags.isLooping = state
+    def setFlagState(flag, state):
 
-    def setMemState(state):
-        log("info" f"{file}: Setting Router History state to {state}")
-        flags.doRemember = state
+        log("debug", f"{file}: Using setFlagState function")
+        log("info", f"{flie}: Changing state of {flag} flag to {state}")
+
+
+        if flag == "isLooping":
+            flags.isLooping = state
+            log("debug", f"{file}: isLooping flag changed")
+
+        elif flag == "doRemember":
+            flags.doRemember = state
+            log("debug", f"{file}: doRemember flag changed")
+
+        else:
+            print("Flag input not valid")

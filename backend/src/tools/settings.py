@@ -72,7 +72,7 @@ Examples:
 - "what kernel am I using?" -> uname -r
 - "install firefox" -> sudo pacman -S firefox
 
-Use "None" for everything that does not require accessing the computer.
+Use "None" for talking and normal conversations
 
 Examples:
 - greetings
@@ -97,18 +97,19 @@ If "runBash" is selected:
 - action MUST contain ONLY the Bash command.
 - Use the minimum command needed.
 - Do not perform unrelated actions.
+- If multiple commands are needed don't respond like {{"tool": "runBash", "action": "ls pwd cd"}}. This will cause errors when executing them use the following style:  {exampleOut}
 
 If "None" is selected:
 - action MUST equal the EXACT original user message.
 
 FLAGS:
 
-"enableRouterHistory":
-- Normally true.
+"doRemember":
+- Normally false. Only used when the router will need context information in case is looping
 - Use history when previous commands/results may help understand follow-up requests.
 - Set false only when history is clearly unnecessary.
 
-"continueLoop":
+"isLooping":
 - true when a tool result must return to CIEL for further processing.
 - Normally true for runBash.
 - Normally false for None.
@@ -117,14 +118,7 @@ If uncertain whether computer access is required, choose "None".
 
 OUTPUT FORMAT:
 
-{{
-    "tool": "runBash | None",
-    "action": "",
-    "flags": {{
-        "enableRouterHistory": true,
-        "continueLoop": true
-    }}
-}}
+{exampleOut}
 
 RULES:
 1. Return ONLY the JSON object.
@@ -132,8 +126,10 @@ RULES:
 3. Never invent user intent.
 4. Never perform extra actions.
 5. Only use tools listed above.
+6. Flags always need to be outputted to manage the ReAct loop
+7. You an write multiple tools to be used in a single go as shown in the example output
 
-EXAMPLES:
+EXAMPLE RESPONSE:
 {exampleOut}
 
 ROUTER HISTORY:
@@ -141,7 +137,7 @@ ROUTER HISTORY:
 
 
 
-
+#print(routerPrompt)
 
 
 
