@@ -11,7 +11,7 @@ def fixJson(inpJson):
     validJson = json.dumps(fxJson)
 
     log("debug", "jsonTools.py: fixJson function finished")
-    log("info", f"jsonTOols.py: fix json function output {"validJson"}")
+    log("info", f"jsonTOols.py: fix json function output {validJson}")
 
 
     return validJson

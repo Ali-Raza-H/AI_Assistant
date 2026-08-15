@@ -7,6 +7,7 @@ from src.tools.chatHistoryTools import loadChatHistory, saveChatHistory, wipeCha
 from src.tools.logger import log
 from src.tools.settings import llmPrompt
 from src.router import router
+from src.tools.ttsEngine import speak
 # System prompts
 systemPrompt = llmPrompt
 
@@ -39,11 +40,11 @@ def llmComs(message):
     #fullResponse = nvidiaComm(systemPrompt, message, True)
     fullResponse = geminiComm(systemPrompt, message, True)
     # fullResponse = ollamaComm(str(systemPrompt), str(message), True)
-
     log("debug", "main.py: Main llm communication ended")
     log("debug", "streaming main llm answer")
     log("debug", "main.py: Function to save chat history called")
 
+    speak(fullResponse)
     saveChatHistory(message, fullResponse)
 
 

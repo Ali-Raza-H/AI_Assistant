@@ -2,3 +2,5 @@ ollama
 openai
 dotenv
 google-genai
+kokoro
+sounddevice

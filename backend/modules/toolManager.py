@@ -59,9 +59,9 @@ def toolRouter(routerInput):
                 with open(COMMANDS_PATH, "a") as f:
                     json.dump({"action": tool["action"]}, f)
 
-                rtrn = runCommands()
+                commandOut = runCommands()
 
-                return rtrn
+                return commandOut
 
     except Exception as e:
         print("Error occured check logs")
