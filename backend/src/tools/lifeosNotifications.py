@@ -1,21 +1,15 @@
 from __future__ import annotations
 
-import json
 import threading
 import time
-import uuid
-from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
 
 from src.tools.lifeosClient import runLifeOSAction
 from src.events import eventBus
 from src.tools.logger import log
 from src.tools.settings import (
     lifeOSAPIKey,
-    lifeOSBaseURL,
-    lifeOSNotificationReconnectSeconds,
+    lifeOSNotificationPollSeconds,
     lifeOSNotificationsEnabled,
-    lifeOSTimeoutSeconds,
 )
 
 
@@ -47,55 +41,44 @@ def _acknowledge(event_id: int) -> bool:
     return True
 
 
+def _poll_once(last_event_id: int) -> int:
+    result = runLifeOSAction(
+        "list_events",
+        {"after": max(0, last_event_id), "limit": 100},
+    )
+    if not result.get("success"):
+        log("error", f"{file}: LifeOS notification poll failed: {result.get('error', 'unknown error')}")
+        return last_event_id
+
+    data = result.get("data")
+    events = data.get("events") if isinstance(data, dict) else None
+    if not isinstance(events, list):
+        log("error", f"{file}: LifeOS notification poll returned an invalid response")
+        return last_event_id
+
+    for event in events:
+        if not isinstance(event, dict):
+            continue
+        event_id = event.get("id")
+        if isinstance(event_id, bool) or not isinstance(event_id, int) or event_id <= last_event_id:
+            continue
+        _display_event(event)
+        if not _acknowledge(event_id):
+            break
+        last_event_id = event_id
+    return last_event_id
+
+
 def _listen_forever() -> None:
     last_event_id = 0
-    reconnect_seconds = max(1.0, float(lifeOSNotificationReconnectSeconds))
-    stream_timeout = max(60.0, float(lifeOSTimeoutSeconds))
+    poll_seconds = max(1.0, float(lifeOSNotificationPollSeconds))
 
     while True:
-        url = f"{str(lifeOSBaseURL).rstrip('/')}/api/v1/assistant/events/stream"
-        headers = {
-            "Accept": "text/event-stream",
-            "Authorization": f"Bearer {lifeOSAPIKey}",
-            "User-Agent": "CIEL-LifeOS/1.0",
-            "X-Request-ID": uuid.uuid4().hex,
-        }
-        if last_event_id:
-            headers["Last-Event-ID"] = str(last_event_id)
-
-        request = Request(url, headers=headers, method="GET")
         try:
-            with urlopen(request, timeout=stream_timeout) as response:
-                event_id = None
-                data_lines = []
-                for raw_line in response:
-                    line = raw_line.decode("utf-8", errors="replace").rstrip("\r\n")
-                    if not line:
-                        if data_lines:
-                            event = json.loads("\n".join(data_lines))
-                            if isinstance(event, dict):
-                                parsed_id = event.get("id", event_id)
-                                if isinstance(parsed_id, int) and parsed_id > 0:
-                                    _display_event(event)
-                                    if _acknowledge(parsed_id):
-                                        last_event_id = max(last_event_id, parsed_id)
-                                    else:
-                                        raise OSError("event acknowledgement failed")
-                        event_id = None
-                        data_lines = []
-                        continue
-                    if line.startswith(":"):
-                        continue
-                    field, _, value = line.partition(":")
-                    value = value.lstrip()
-                    if field == "id" and value.isdigit():
-                        event_id = int(value)
-                    elif field == "data":
-                        data_lines.append(value)
-        except (HTTPError, URLError, TimeoutError, OSError, json.JSONDecodeError) as error:
-            log("error", f"{file}: LifeOS notification stream disconnected: {error}")
-
-        time.sleep(reconnect_seconds)
+            last_event_id = _poll_once(last_event_id)
+        except Exception as error:
+            log("error", f"{file}: LifeOS notification poll failed: {error}")
+        time.sleep(poll_seconds)
 
 
 def startLifeOSNotificationListener():
@@ -116,5 +99,5 @@ def startLifeOSNotificationListener():
             daemon=True,
         )
         _listener_thread.start()
-        log("info", f"{file}: LifeOS notification listener started")
+        log("info", f"{file}: LifeOS notification polling started")
         return _listener_thread

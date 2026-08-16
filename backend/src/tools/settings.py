@@ -29,8 +29,14 @@ lifeOSTimeoutSeconds = float(os.getenv("LIFEOS_TIMEOUT_SECONDS", "15"))
 lifeOSMaxRetries = max(0, int(os.getenv("LIFEOS_MAX_RETRIES", "1")))
 lifeOSRetryBackoffSeconds = max(0.0, float(os.getenv("LIFEOS_RETRY_BACKOFF_SECONDS", "0.4")))
 lifeOSNotificationsEnabled = os.getenv("LIFEOS_NOTIFICATIONS_ENABLED", "1") != "0"
-lifeOSNotificationReconnectSeconds = float(
-    os.getenv("LIFEOS_NOTIFICATION_RECONNECT_SECONDS", "5")
+lifeOSNotificationPollSeconds = max(
+    1.0,
+    float(
+        os.getenv(
+            "LIFEOS_NOTIFICATION_POLL_SECONDS",
+            os.getenv("LIFEOS_NOTIFICATION_RECONNECT_SECONDS", "5"),
+        )
+    ),
 )
 
 

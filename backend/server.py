@@ -94,7 +94,7 @@ def createApp() -> FastAPI:
         operations = {
             "tasks": ("list_tasks", {"status": "pending"}),
             "calendar": ("list_calendar", {}),
-            "notifications": ("list_events", {"acknowledged": False}),
+            "notifications": ("list_events", {"include_acknowledged": 0}),
         }
         results = await asyncio.gather(
             *(_lifeOSRead(operation, arguments) for operation, arguments in operations.values()),
