@@ -1,77 +1,94 @@
 import json
-from src.tools.logger import log
-from modules.toolManager import toolRouter
+
+from modules.toolManager import normalizeRouterInput, parseRouterInput
 from src.providers.ollamaProv import ollamaComm
-from src.tools.settings import routerPrompt
-from src.tools.settings import ROUTER_HISTORY_PATH
 from src.tools.flagManager import flags
+from src.tools.logger import log
+from src.tools.settings import ROUTER_HISTORY_PATH, routerPrompt, routerSchema
 
-# VARIABLES
 file = "router.py"
-sysPrompt = routerPrompt
 path = ROUTER_HISTORY_PATH
+maxFormatRetries = 2
 
-
-# Function to load router's history
 
 def loadRouterHistory():
-    log("debug", f"{file} load router history function started")
+    log("debug", f"{file}: load router history function started")
+    try:
+        with open(path, "r", encoding="utf-8") as routerHistoryData:
+            routerHistory = json.load(routerHistoryData)
+    except (FileNotFoundError, json.JSONDecodeError):
+        routerHistory = []
 
-    with open(path, "r") as routerHistoryData:
-        routerHistory = json.load(routerHistoryData)
+    if not isinstance(routerHistory, list):
+        routerHistory = []
 
-        log("debug", f"{file} load chat history function finished")
-        log("info", f"{file} Router chat history returning {routerHistory}")
-
+    log("info", f"{file}: router history contains {len(routerHistory)} item(s)")
     return routerHistory
 
 
-#Function to handle quit command
-
-def quitCommand():
-    wipeChatHistory()
-    print("Goodbye")
-    log("debug", f"{file}: quit function executed")
-    exit()
+def saveRouterHistory(routerHistory):
+    with open(path, "w", encoding="utf-8") as routerHistoryData:
+        json.dump(routerHistory, routerHistoryData, indent=2)
 
 
+def clearRouterHistory():
+    saveRouterHistory([])
 
 
-#####################################
-#       MAIN ROUTER FUNCTION        #
-#####################################
+def routeOnce(systemPrompt, userInput):
+    validationError = None
+
+    for attempt in range(maxFormatRetries):
+        retryInput = userInput
+        if validationError is not None:
+            retryInput += (
+                "\n\nYour previous response failed validation: "
+                f"{validationError}. Return only a JSON object matching the schema."
+            )
+
+        routerOutput = ollamaComm(
+            systemPrompt,
+            retryInput,
+            False,
+            responseFormat=routerSchema,
+        )
+        try:
+            parsedOutput = parseRouterInput(routerOutput)
+            return normalizeRouterInput(parsedOutput)
+        except (TypeError, ValueError) as error:
+            validationError = error
+            log(
+                "error",
+                f"{file}: invalid router output on attempt {attempt + 1}: {error}",
+            )
+
+    raise ValueError(
+        f"Router failed to return a valid decision after {maxFormatRetries} attempts: "
+        f"{validationError}"
+    )
 
 
-def router(userMsg):
+def router(userMsg, latestContext=None, iteration=1):
+    systemPrompt = routerPrompt
 
-    # Handle quit command
-    if userMsg == "/quit":
-        log("debug", f"{file}: Quit function used")
-        quitCommand()
-        return
+    if flags.doRemember:
+        routerHistory = loadRouterHistory()
+        if routerHistory:
+            systemPrompt += (
+                "\nROUTER HISTORY:\n" + json.dumps(routerHistory, indent=2)
+            )
+    elif latestContext is not None:
+        systemPrompt += (
+            "\nLATEST LOOP CONTEXT:\n" + json.dumps(latestContext, indent=2)
+        )
 
-
-    #Setting valuse that will go into the llm Communication
-    log("debug", f"{file}: Setting up variables for router's llm")
-
-    userInp = f"User's Input: {userMsg}"
-    if flags.doRemember == True:
-
-        log("debug", f"{file}: doRemember flag true")
-
-        routerHistory = loadRouterHistory
-        sysPrompt += routerHistory
-
-        log("info", f"{file}: router history loaded into router prompt {sysPrompt}")
-
-    else:
-        sysPrompt = routerPrompt
-
-    log("debug", f"{file}: Ollama communication for router started")
-    routerOut = ollamaComm(sysPrompt, userInp, False)
-
-    log("debug", f"{file}: Sending router output to tool manager")
-    toolAns = toolRouter(routerOut)
-    log("info", f"{file}: Tool manager output -- {toolAns}")
-
-    return toolAns
+    userInput = (
+        f"Original user input: {userMsg}\n"
+        f"Controller iteration: {iteration}"
+    )
+    log(
+        "debug",
+        f"{file}: requesting decision for iteration {iteration}; "
+        f"doRemember={flags.doRemember}",
+    )
+    return routeOnce(systemPrompt, userInput)

@@ -5,8 +5,8 @@
     },
 
     "tools": [
-        {"tool": "runBash", "action": "ls"},
-        {"tool": "runBash", "action": "pwd"},
-        {"tool": "runBash", "action": "tree -d"}
+        {"tool": "runBash", "action": "ls", "arguments": {}},
+        {"tool": "runBash", "action": "pwd", "arguments": {}},
+        {"tool": "runBash", "action": "tree -d", "arguments": {}}
     ]
 }

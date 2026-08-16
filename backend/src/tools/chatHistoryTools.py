@@ -4,36 +4,38 @@ from src.tools.logger import log
 from src.tools.settings import CHAT_HISTORY_PATH
 
 historyJsonPath = CHAT_HISTORY_PATH
-file = "chatHistoryTools.py:"
-jsonData = []
+file = "chatHistoryTools.py"
 
 
 def loadChatHistory():
-    log("debug", f"{file} load chat history function started")
+    log("debug", f"{file}: load chat history function started")
+    try:
+        with open(historyJsonPath, "r", encoding="utf-8") as jsonDataRead:
+            chatHistory = json.load(jsonDataRead)
+    except (FileNotFoundError, json.JSONDecodeError):
+        chatHistory = []
 
-    with open(historyJsonPath, "r") as jsonDataRead:
-        chatHistory = json.load(jsonDataRead)
-        # jsonData.append(chatHistory)
-        log("debug", f"{file} load chat history function finished")
-        log("info", f"{file} Chat history return {jsonData}")
+    if not isinstance(chatHistory, list):
+        chatHistory = []
 
-    return jsonData
+    log("info", f"{file}: chat history returning {chatHistory}")
+    return chatHistory
 
 
 def saveChatHistory(userMessage, AIresponse):
-    log("debug", f"{file} save chat history function started")
+    log("debug", f"{file}: save chat history function started")
+    jsonData = loadChatHistory()
+    jsonData.append(
+        {"userMessage": userMessage, "assistantResponse": AIresponse}
+    )
 
-    chatHistory = {"userMessage": userMessage, "assistantResponse": AIresponse}
-
-    log("info", f"P{file} Data to be saved {chatHistory}")
-    jsonData.append(chatHistory)
-    with open(historyJsonPath, "w") as jsonFile:
-        json.dump(jsonData, jsonFile)
-    log("debug", f"{file} save chat history function finished")
+    with open(historyJsonPath, "w", encoding="utf-8") as jsonFile:
+        json.dump(jsonData, jsonFile, indent=2)
+    log("debug", f"{file}: save chat history function finished")
 
 
 def wipeChatHistory():
-    log("debug", f"{file} wipe chat history function started")
-    with open(historyJsonPath, "w") as jsonFile:
+    log("debug", f"{file}: wipe chat history function started")
+    with open(historyJsonPath, "w", encoding="utf-8") as jsonFile:
         json.dump([], jsonFile)
-    log("debug", f"{file}, wipe chat history function finished")
+    log("debug", f"{file}: wipe chat history function finished")

@@ -2,11 +2,35 @@
     "runBash": {
         "description": "Runs Bash commands on the user's Arch Linux computer.",
         "useCase": "Use when the user asks to run a command, inspect the system, manage files, open apps, or perform an action that requires the terminal.",
-        "input": "A valid Bash command."
+        "input": "Put a valid Bash command in action and an empty object in arguments."
     },
-    "None": {
-        "description": "Passes the original user request to the main language model.",
-        "useCase": "Use for conversation, questions, explanations, writing, and anything that does not require a terminal operation.",
-        "input": "The exact original user message."
+    "lifeOS": {
+        "description": "Reads and updates the user's private LifeOS data through its authenticated assistant API.",
+        "useCase": "Use for tasks, projects, goals, habits, calendar events, notes, library items, contacts, journal, health, diet, gym, finance, daily context, search, and LifeOS notifications. Never use Bash or curl for LifeOS.",
+        "input": {
+            "action": "One exact operation name from operations.",
+            "arguments": "A JSON object. Resource identifiers such as task_id go here, along with query parameters or body fields.",
+            "operations": {
+                "read": [
+                    "get_capabilities", "get_today", "get_weekly_review", "search",
+                    "list_tasks", "get_task", "list_projects", "get_project",
+                    "list_goals", "list_habits", "list_calendar", "list_notes",
+                    "list_library", "list_contacts", "list_journal", "list_health",
+                    "list_diet", "list_gym_routines", "list_gym_logs", "list_finance",
+                    "list_events"
+                ],
+                "write": [
+                    "create_task", "update_task", "complete_task", "create_project",
+                    "update_project", "create_project_milestone", "update_project_milestone",
+                    "create_goal", "update_goal", "create_goal_milestone", "update_goal_milestone",
+                    "create_habit", "update_habit", "log_habit",
+                    "create_calendar_event", "update_calendar_event", "create_note",
+                    "update_note", "create_library_item", "update_library_item",
+                    "create_contact", "update_contact", "create_journal", "update_journal",
+                    "create_health", "create_diet", "create_gym_log", "create_finance",
+                    "update_finance", "acknowledge_event"
+                ]
+            }
+        }
     }
 }

@@ -1,0 +1,41 @@
+{
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["flags", "tools"],
+    "properties": {
+        "flags": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["isLooping", "doRemember"],
+            "properties": {
+                "isLooping": {
+                    "type": "boolean"
+                },
+                "doRemember": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "tools": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["tool", "action"],
+                "properties": {
+                    "tool": {
+                        "type": "string",
+                        "enum": ["runBash", "lifeOS"]
+                    },
+                    "action": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "arguments": {
+                        "type": "object"
+                    }
+                }
+            }
+        }
+    }
+}

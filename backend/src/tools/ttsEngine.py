@@ -27,4 +27,4 @@ def speak(inp):
             print("Speaking: ", graphemes)
 
             sd.play(audio, samplerate=24000)
-            sd.wait
+            sd.wait()

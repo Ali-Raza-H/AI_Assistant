@@ -9,7 +9,7 @@ MODEL = gCIEL
 FILE = "googleProv.py"
 
 
-def geminiComm(sysPrompt, usrPrompt, isStreaming):
+def geminiComm(sysPrompt, usrPrompt, isStreaming, onToken=None):
     from openai import OpenAI
 
 
@@ -18,10 +18,7 @@ def geminiComm(sysPrompt, usrPrompt, isStreaming):
 
     client = OpenAI(base_url=URL, api_key=API_KEY)
 
-    log(
-        "info",
-        f"{FILE}: Client settings used -- provider - {URL} -- API KEY - {API_KEY}",
-    )
+    log("info", f"{FILE}: Client configured for provider {URL}")
     log("debug", f"{FILE}: Starting communication with gemini")
 
     try:
@@ -35,6 +32,7 @@ def geminiComm(sysPrompt, usrPrompt, isStreaming):
         )
     except Exception as e:
         log("ERROR", f"{FILE}: ERROR ENCOUNTERED AFTER IN GEMINI COMMUNICATION: {e}")
+        raise RuntimeError("Gemini communication failed") from e
 
     if isStreaming == True:
         log("debug", f"{FILE}: Streaming response path")
@@ -47,9 +45,11 @@ def geminiComm(sysPrompt, usrPrompt, isStreaming):
             if content:
                 fullResponse += content
                 print(content, end="", flush=True)
+                if onToken is not None:
+                    onToken(content)
 
         return fullResponse
 
     elif isStreaming == False:
         log("debug", f"{FILE}: Not streaming response path")
-        return response
+        return response.choices[0].message.content

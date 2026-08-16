@@ -1,66 +1,54 @@
-import ollama
-from modules.toolManager import toolRouter
-from src.providers.googleProv import geminiComm
-from src.providers.ollamaProv import ollamaComm
-from src.providers.nvidiaProv import nvidiaComm
-from src.tools.chatHistoryTools import loadChatHistory, saveChatHistory, wipeChatHistory
+from src.controller import runController
+from src.router import clearRouterHistory
+from src.tools.chatHistoryTools import wipeChatHistory
+from src.tools.lifeosNotifications import startLifeOSNotificationListener
 from src.tools.logger import log
-from src.tools.settings import llmPrompt
-from src.router import router
-from src.tools.ttsEngine import speak
-# System prompts
-systemPrompt = llmPrompt
 
 
-log("info", "Main.py: Variables created")
+log("info", "main.py: variables created")
+
 
 def quitCommand():
     wipeChatHistory()
+    clearRouterHistory()
     print("Goodbye")
-    log("debug", "Main.py: quit function executed")
-    exit()
+    log("debug", "main.py: quit function executed")
+    raise SystemExit
 
 
 def llmComs(message):
-    log("debug", "main.py: llmComs function started")
-
-    routerResponse = router(message)
-
-    log(
-        "info",
-        f"main.py: llmComs function router function output recived: {routerResponse}",
-    )
-    log("debug", "main.py: Main llm communication started")
-
-    chatHistory = loadChatHistory()
-    systemPrompt = f"{llmPrompt} -Chat Hisotry: {chatHistory}"
-
-    message = f"Router Response: {routerResponse}, User's message: {message}"
-
-    #fullResponse = nvidiaComm(systemPrompt, message, True)
-    fullResponse = geminiComm(systemPrompt, message, True)
-    # fullResponse = ollamaComm(str(systemPrompt), str(message), True)
-    log("debug", "main.py: Main llm communication ended")
-    log("debug", "streaming main llm answer")
-    log("debug", "main.py: Function to save chat history called")
-
-    speak(fullResponse)
-    saveChatHistory(message, fullResponse)
+    log("debug", "main.py: controller interaction started")
+    return runController(message)
 
 
 def main():
-
     try:
-        while True:
+        from server import startWebServer
+
+        startWebServer()
+        print("CIEL interface: http://127.0.0.1:8765")
+    except ImportError as error:
+        log("error", f"main.py: web interface unavailable: {error}")
+        print("CIEL interface unavailable. Install backend requirements to enable it.")
+    startLifeOSNotificationListener()
+    while True:
+        try:
             print("")
             userInput = input(">>   ")
             print("")
-            llmComs(userInput)
+        except (EOFError, KeyboardInterrupt):
+            quitCommand()
 
-    except Exception as e:
-        log("error", f"main.py: main function error: {e}")
-        print(f"Error: {e}")
-        quitCommand()
+        if userInput == "/quit":
+            quitCommand()
+
+        try:
+            llmComs(userInput)
+        except Exception as error:
+            # Loop history is deliberately retained so the next interaction
+            # can inspect a request that failed before the router ended it.
+            log("error", f"main.py: request failed: {error}")
+            print(f"Error: {error}")
 
 
 if __name__ == "__main__":

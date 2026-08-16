@@ -4,3 +4,5 @@ dotenv
 google-genai
 kokoro
 sounddevice
+fastapi
+uvicorn[standard]

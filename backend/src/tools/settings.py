@@ -148,15 +148,15 @@ FLAGS:
 
 "doRemember":
 - Normally false. Use it when another routing iteration needs the current tool results.
-- Use history when previous commands/results may help understand follow-up requests.
-- It MUST be true whenever "isLooping" is true.
+- true includes the complete router history in the next iteration.
+- false skips the complete history; if the loop continues, the latest CIEL output and tool results are still provided.
 
 "isLooping":
-- true when the tool result must return to the router for another routing decision.
-- false when the task can proceed to CIEL after the selected tools run.
-- It MUST be false when "tools" is empty.
+- true when another complete Router -> Tools -> CIEL cycle is required.
+- false when the current CIEL response should finish the user interaction.
+- A tool failure forces both flags to true after execution.
 
-When TOOL RESULTS are present in the router history:
+When TOOL RESULTS and CIEL OUTPUTS are present in the router history:
 - Do not repeat a command that has already completed successfully.
 - If the original request is satisfied, return an empty "tools" list and set both flags to false.
 

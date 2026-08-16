@@ -1,68 +1,160 @@
 import json
+
 from modules.runBashCommands import runCommands
 from src.tools.jsonTools import fixJson
-from src.tools.settings import COMMANDS_PATH
 from src.tools.flagManager import flags
+from src.tools.lifeosClient import LIFEOS_OPERATIONS, runLifeOSAction
+from src.events import eventBus
 from src.tools.logger import log
 
 file = "toolManager.py"
-
-def toolRouter(routerInput):
-
-    log("debug", f"{file}: tool router function started")
-    log("info", f"{file}: router input: {routerInput}")
+allowedTools = {"runBash", "lifeOS"}
 
 
-#   ---------------- LOADING JSON ----------------
+def parseRouterInput(routerInput):
+    if isinstance(routerInput, dict):
+        return routerInput
+    if not isinstance(routerInput, str):
+        raise TypeError("Router output must be a JSON string or dictionary")
+
     try:
-        log("debug", f"{file}: Trying to load routerInput as json")
-        inputJson = json.loads(routerInput)
-        log("debug", f"{file}: Json loaded successfully")
-
+        return json.loads(routerInput)
     except json.JSONDecodeError:
-        log("error", f"{file}: JSONDecodeError with {routerInput}")
-        log("debug", f"{file}: Trying auto fix json")
-
-        nwJson = fixJson(routerInput)
-
-        log("info", f"{file}: fixed json output -- {nwJson}")
-        nwCall = toolRouter(nwJson)
-
-        log("debug", f"{file}: Calling router function again with fixed json")
-        return nwCall
+        log("error", f"{file}: router returned invalid JSON")
+        try:
+            return json.loads(fixJson(routerInput))
+        except (ValueError, SyntaxError, json.JSONDecodeError) as error:
+            raise ValueError("Router output could not be parsed as JSON") from error
 
 
-#   ---------------- MANAGING FLAGS ----------------
-    try:
-        log("debug", f"{file}: Loading flag data to be processed")
+def normalizeRouterInput(routerInput):
+    if not isinstance(routerInput, dict):
+        raise ValueError("Router output must contain a JSON object")
 
-        for flag in inputJson["flags"]:
-            state = inputJson["flags"][flag]
+    # Temporary compatibility with the previous {tool, action} contract.
+    if "tool" in routerInput:
+        toolName = routerInput.get("tool")
+        hasTool = toolName not in {None, "None"}
+        routerInput = {
+            "flags": {
+                "isLooping": hasTool,
+                "doRemember": hasTool,
+            },
+            "tools": (
+                [
+                    {
+                        "tool": toolName,
+                        "action": routerInput.get("action", ""),
+                        "arguments": routerInput.get("arguments", {}),
+                    }
+                ]
+                if hasTool
+                else []
+            ),
+        }
 
-            log("info", f"{file}: Setting flag {flag} to state {state}")
-            flags.setFlagState(flag, state)
+    routerFlags = routerInput.get("flags")
+    tools = routerInput.get("tools")
+    if not isinstance(routerFlags, dict):
+        raise ValueError("Router output is missing the flags object")
+    if not isinstance(tools, list):
+        raise ValueError("Router output is missing the tools list")
 
-    except Exception as e:
-        log("Error", f"{file} Error in managing flags: {e}")
+    normalizedFlags = {
+        "isLooping": routerFlags.get("isLooping"),
+        "doRemember": routerFlags.get("doRemember"),
+    }
+    for flagName, state in normalizedFlags.items():
+        if type(state) is not bool:
+            raise ValueError(f"Router flag {flagName} must be a boolean")
+
+    normalizedTools = []
+    for tool in tools:
+        if not isinstance(tool, dict):
+            raise ValueError("Every tool entry must be an object")
+        toolName = tool.get("tool")
+        action = tool.get("action")
+        arguments = tool.get("arguments", {})
+        if toolName not in allowedTools:
+            raise ValueError(f"Unknown router tool: {toolName}")
+        if not isinstance(action, str) or not action.strip():
+            raise ValueError(f"Tool {toolName} requires a non-empty action")
+        if not isinstance(arguments, dict):
+            raise ValueError(f"Tool {toolName} arguments must be an object")
+        if toolName == "runBash" and arguments:
+            raise ValueError("runBash arguments must be an empty object")
+        if toolName == "lifeOS" and action not in LIFEOS_OPERATIONS:
+            raise ValueError(f"Unknown LifeOS operation: {action}")
+        normalizedTools.append(
+            {"tool": toolName, "action": action, "arguments": arguments}
+        )
+
+    return {"flags": normalizedFlags, "tools": normalizedTools}
 
 
-#   ---------------- RUNNING COMMANDS ----------------
-    try:
-        log("debug", f"{file}: Running commands section")
+def toolRouter(routerInput, interactionId=None, iteration=None):
+    log("debug", f"{file}: tool router function started")
 
-        for tool in inputJson["tools"]:
-            log("info", f"{file}: Running the following command -- {tool}")
+    inputJson = normalizeRouterInput(parseRouterInput(routerInput))
+    selectedTools = [
+        {"tool": tool["tool"], "action": tool["action"]}
+        for tool in inputJson["tools"]
+    ]
+    log("info", f"{file}: router selected tools: {selectedTools}")
+    effectiveFlags = dict(inputJson["flags"])
+    for flagName, state in effectiveFlags.items():
+        flags.setFlagState(flagName, state)
 
-            if tool["tool"] == "runBash":
-                log("debug", f"{file}: Using runBash Tool")
+    results = []
+    for toolIndex, tool in enumerate(inputJson["tools"]):
+        log("info", f"{file}: running {tool['tool']}/{tool['action']}")
+        eventBus.emit(
+            "tool.started",
+            {
+                "interactionId": interactionId,
+                "iteration": iteration,
+                "index": toolIndex,
+                "tool": tool,
+            },
+        )
+        try:
+            if tool["tool"] == "lifeOS":
+                commandResult = runLifeOSAction(tool["action"], tool["arguments"])
+            else:
+                commandResult = runCommands(tool["action"])
+        except Exception as error:
+            log(
+                "error",
+                f"{file}: {tool['tool']}/{tool['action']} raised an error: {error}",
+            )
+            commandResult = {
+                "success": False,
+                "error": str(error),
+            }
+        toolResult = {
+            "tool": tool["tool"],
+            "action": tool["action"],
+            **commandResult,
+        }
+        results.append(toolResult)
+        eventBus.emit(
+            "tool.completed",
+            {
+                "interactionId": interactionId,
+                "iteration": iteration,
+                "index": toolIndex,
+                "result": toolResult,
+            },
+        )
 
-                with open(COMMANDS_PATH, "a") as f:
-                    json.dump({"action": tool["action"]}, f)
+    if any(result.get("success") is not True for result in results):
+        effectiveFlags = {"isLooping": True, "doRemember": True}
+        flags.setFlagState("isLooping", True)
+        flags.setFlagState("doRemember", True)
+        log("info", f"{file}: tool failure forced both controller flags to true")
 
-                commandOut = runCommands()
-
-                return commandOut
-
-    except Exception as e:
-        print("Error occured check logs")
-        log("error", f"{file}: Error occurred when running commands -- {e}")
+    return {
+        "flags": effectiveFlags,
+        "tools": inputJson["tools"],
+        "results": results,
+    }
