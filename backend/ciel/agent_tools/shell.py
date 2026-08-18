@@ -1,21 +1,26 @@
+import os
 import subprocess
 from typing import Any
+
 from backend.ciel.runtime.logging import log
 
 
-def runCommands(command: str) -> dict[str, Any]:
-    log("debug", "runBashCommands.py: runCommands function started")
+DEFAULT_TIMEOUT_SECONDS = max(
+    1.0,
+    float(os.getenv("CIEL_SHELL_TIMEOUT_SECONDS", "60")),
+)
 
-    # ----------- Checking if it's an empty command input and wether command is string ----------- #
+
+def runCommands(command: str) -> dict[str, Any]:
+    log("debug", "shell.py: runCommands started")
+
     if not isinstance(command, str) or not command.strip():
-        # Returns error explaining command should not be empty
         return {
             "success": False,
             "output": "The command must be a non-empty string.",
             "returnCode": 2,
         }
 
-    # ----------- Runninc commands -----------#
     try:
         completed = subprocess.run(
             command,
@@ -23,21 +28,35 @@ def runCommands(command: str) -> dict[str, Any]:
             capture_output=True,
             text=True,
             check=False,
+            timeout=DEFAULT_TIMEOUT_SECONDS,
         )
-
-    # ----------- Exception for command not accepted ----------- #
+    except subprocess.TimeoutExpired as error:
+        output_parts = []
+        for part in (error.stdout, error.stderr):
+            if isinstance(part, bytes):
+                part = part.decode("utf-8", errors="replace")
+            if part:
+                output_parts.append(str(part).rstrip())
+        output = "\n".join(output_parts)
+        message = f"Command timed out after {DEFAULT_TIMEOUT_SECONDS:g} seconds."
+        if output:
+            message = f"{message}\n{output}"
+        log("error", "shell.py: command timed out")
+        return {
+            "success": False,
+            "output": message,
+            "returnCode": 124,
+            "timedOut": True,
+        }
     except OSError as error:
-        log("error", f"runBashCommands.py: command failed to start: {error}")
+        log("error", f"shell.py: command failed to start: {error}")
         return {"success": False, "output": str(error), "returnCode": 1}
 
-
-    # ----------- Cleans up output into readable format ----------- #
-    outputParts = []
+    output_parts = []
     for part in (completed.stdout, completed.stderr):
         if part:
-            outputParts.append(part.rstrip())
-    output = "\n".join(outputParts)
-
+            output_parts.append(part.rstrip())
+    output = "\n".join(output_parts)
 
     result = {
         "success": completed.returncode == 0,
@@ -45,6 +64,10 @@ def runCommands(command: str) -> dict[str, Any]:
         "returnCode": completed.returncode,
     }
 
-
-    log("info", f"runBashCommands.py: command result {result}")
+    # Do not write arbitrary shell output to logs. It may contain secrets or
+    # private data. Operational metadata is sufficient for diagnostics.
+    log(
+        "info",
+        f"shell.py: command finished returnCode={completed.returncode} success={result['success']}",
+    )
     return result
