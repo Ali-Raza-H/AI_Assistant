@@ -5,19 +5,21 @@
 CIEL uses its primary response model as the central "Brain" that decides whether to answer, ask for clarification, retrieve memory, or request an action. Groq translates requested actions into valid tool calls. The controller executes those calls, turns results into observations, returns them to the Brain, and persists the completed interaction through SQLite-backed memory.
 
 > [!WARNING]
-> CIEL is experimental software. Its `runBash` tool executes model-selected commands through the host shell with `shell=True`. There is currently no sandbox or confirmation step. Run it only in an environment where you understand and accept that risk.
+> CIEL is experimental software. Its `runBash` tool executes model-selected commands through the host shell with `shell=True`. Commands have a timeout, but there is currently no sandbox, allowlist, or confirmation step. Run it only in an environment where you understand and accept that risk.
 
 ## Highlights
 
 - Brain-owned Think → Act → Observe loop with a controller-enforced safety limit
+- Strict structured Brain decisions with validation and bounded format recovery
 - Interaction-local context and working memory instead of global cognitive state
-- Pre-reasoning memory retrieval through a central `MemoryManager`
+- Session-scoped recent conversation plus pre-reasoning long-term memory retrieval
 - SQLite-backed raw conversation, session, episodic, semantic, entity, relationship, procedure, and vector-index storage
+- Episodic ranking using relevance, importance, recency, and reinforcement
 - Fast Groq action routing with schema-guided, locally validated JSON output
-- Shell execution for direct interaction with the host system
+- Shell execution with configurable command timeout
 - Optional authenticated LifeOS reads, writes, dashboard data, and notification polling
 - Streaming React interface with live context, memory, brain, router, tool, observation, response, and event visibility
-- Terminal interface and spoken responses using Kokoro TTS
+- Terminal interface and best-effort spoken responses using Kokoro TTS
 - Rotating application logs and compatibility wrappers for the old `backend/main.py` and `backend/server.py` launch paths
 
 ## How it works
@@ -39,21 +41,23 @@ flowchart LR
     O --> BRAIN
     BRAIN -->|Need memory| M
     BRAIN -->|Complete or failed| F[Response generator]
-    F --> V[Kokoro voice output]
     F --> H[(SQLite memory DB)]
+    F --> V[Kokoro voice output]
     C --> I
 ```
 
 For every request, the controller:
 
 1. creates an `InteractionContext` with isolated working memory;
-2. retrieves relevant long-term memory before reasoning;
-3. asks CIEL Brain for a structured decision;
+2. retrieves recent session context and relevant long-term memory before reasoning;
+3. asks CIEL Brain for a validated structured decision;
 4. routes requested semantic actions through Groq only when execution is needed;
 5. runs selected tools and normalizes results as observations;
-6. repeats until the Brain returns complete, failed, or need-user;
-7. generates, streams, speaks, and persists one final response; and
-8. evaluates whether the interaction contains durable memories.
+6. returns observations or additional memory to the Brain and repeats as required;
+7. stops when the Brain returns complete, failed, or need-user;
+8. generates and streams one final response;
+9. persists the completed interaction and evaluates durable memory; and
+10. attempts speech as a non-critical side effect.
 
 ## Requirements
 
@@ -63,7 +67,7 @@ For every request, the controller:
 - A Groq API key and router model
 - Internet access to the Groq API and the configured response-model endpoint
 - An API key, model name, and OpenAI-compatible base URL for the response model
-- An audio output device; Kokoro uses `sounddevice` and may require PortAudio packages from your distribution
+- Optional audio output; Kokoro uses `sounddevice` and may require PortAudio packages from your distribution
 - Optional: a compatible LifeOS server and assistant API key
 
 ## Quick start
@@ -98,20 +102,27 @@ cd ..
 Create `backend/.env`:
 
 ```dotenv
-# Final response model (required)
+# Final response / Brain model (required)
 GEMINI_API=your-api-key
 GEMINI_PROV=your-openai-compatible-base-url
 GOOGLE_CIEL_MODEL=your-model-name
 
-# Groq router (required)
+# Response provider resilience (optional; defaults shown)
+CIEL_RESPONSE_TIMEOUT_SECONDS=60
+CIEL_RESPONSE_MAX_RETRIES=2
+
+# Groq action router (required)
 GROQ_API_KEY=your-groq-api-key
 GROQ_ROUTER_MODEL=openai/gpt-oss-20b
 
-# Groq router (optional; defaults shown)
+# Groq router resilience (optional; defaults shown)
 GROQ_BASE_URL=https://api.groq.com/openai/v1
 GROQ_TIMEOUT_SECONDS=30
 GROQ_MAX_RETRIES=2
 GROQ_RETRY_BACKOFF_SECONDS=0.5
+
+# Shell execution timeout (optional; default shown)
+CIEL_SHELL_TIMEOUT_SECONDS=60
 
 # LifeOS integration (optional)
 LIFEOS_BASE_URL=http://127.0.0.1:5000
@@ -129,9 +140,9 @@ CIEL_WEB_PORT=8765
 
 The response provider is called “Gemini” in the current source, but it is accessed through the OpenAI Python client's Chat Completions interface. `GEMINI_PROV` must therefore be the OpenAI-compatible base URL exposed by your provider.
 
-The legacy Groq names `GROQ_API`, `GROQ_MODEL`, and `GROQ_PROV` are still accepted, so existing local configuration does not need to change immediately. GPT-OSS models use Groq's JSON Schema mode; other supported models fall back to JSON Object mode. Every result is validated locally before tool execution.
+The legacy Groq names `GROQ_API`, `GROQ_MODEL`, and `GROQ_PROV` are still accepted. GPT-OSS models use Groq's JSON Schema mode; other supported models fall back to JSON Object mode. Every routed tool result is validated locally before execution.
 
-LifeOS is optional. Leave `LIFEOS_API_KEY` empty and notifications disabled when it is not in use. The dashboard will continue to work without LifeOS data.
+LifeOS is optional. Leave `LIFEOS_API_KEY` empty and notifications disabled when it is not in use. The dashboard continues to work without LifeOS data.
 
 `backend/.env` is ignored by Git. Never commit API keys or other secrets.
 
@@ -148,16 +159,13 @@ source .venv/bin/activate
 python -m backend.entrypoints.cli
 ```
 
-The web interface is available at <http://127.0.0.1:8765>, while the same process also accepts terminal input. Enter `/quit` to stop the terminal application.
+The web interface is available at <http://127.0.0.1:8765>, while the same process also accepts terminal input. Enter `/quit` to stop the terminal application. `/quit` performs a normal shutdown and preserves persisted conversation and long-term memory.
 
 The legacy command still works and delegates to the same entrypoint:
 
 ```bash
 python backend/main.py
 ```
-
-> [!NOTE]
-> `/quit` clears both chat history and transient router history before exiting.
 
 ### Web interface only
 
@@ -198,19 +206,32 @@ The React application has three views:
 
 - **Dashboard** — assistant input plus optional LifeOS tasks, notifications, and calendar data
 - **Chat** — persisted conversation history and live response streaming
-- **Brain** — operational pipeline stage, brain decision, compatibility flags, tool queue, router decision, observations, and recent events
+- **Brain** — operational pipeline stage, structured Brain decision, compatibility flags, tool queue, router decision, observations, and recent events
 
-The Brain view exposes structured operational state only; it does not expose private model reasoning.
+The Brain view exposes structured operational state only. It does not expose private model reasoning.
 
 ## Tools
 
 ### `runBash`
 
-Runs a non-empty shell command on the host and returns its output and exit code. Independent commands may be queued in one routing decision and are executed in order.
+Runs a non-empty shell command on the host and returns its output and exit code. Independent commands may be queued in one routing decision and are executed in order. Commands time out after `CIEL_SHELL_TIMEOUT_SECONDS`, which defaults to 60 seconds.
 
 ### `lifeOS`
 
 Calls the authenticated LifeOS assistant API. Supported resources include tasks, projects, goals, habits, calendar events, notes, library items, contacts, journal entries, health, diet, gym activity, finance, daily context, search, and notifications. LifeOS operations are deliberately routed through its API rather than Bash or direct database access.
+
+## Memory model
+
+CIEL distinguishes several forms of state:
+
+- **Working memory** — temporary interaction-local objectives, assumptions, plans, actions, and observations.
+- **Recent session context** — recent messages from the current runtime session.
+- **Episodic memory** — durable summaries of meaningful interactions, indexed for semantic-style retrieval and ranked by relevance, importance, recency, and reinforcement.
+- **Semantic memory** — structured facts with confidence and temporal history when facts change.
+- **Entity/relationship memory** — known entities and retrievable relationships between them.
+- **Procedural memory** — reusable procedures with success/failure counts and confidence updates.
+
+SQLite remains the source of truth. The current local vector layer uses deterministic hash embeddings as a dependency-free foundation and can later be replaced behind the existing embedding/vector interfaces.
 
 ## API
 
@@ -232,9 +253,9 @@ Only one controller interaction runs at a time. A concurrent message request rec
 CIEL stores runtime state in repository-local files:
 
 - `backend/memory/ciel.db` — SQLite source of truth for sessions, raw messages, interactions, episodic memories, semantic facts, entities, relationships, procedures, and the local vector index
-- `backend/var/logs/` — rotating debug, info, and error logs
+- `backend/var/logs/` — rotating debug, info, warning, and error events; warnings currently share the info log
 
-Raw conversation history and durable memory are separate concepts. The context engine selectively retrieves recent conversation and long-term memory rather than injecting complete histories. Treat these files as private if conversations or LifeOS results contain personal information.
+Raw conversation history and durable memory are separate concepts. The context engine selectively retrieves session context and long-term memory rather than injecting complete histories. Full chat contents and arbitrary shell command output are not intentionally written to application logs.
 
 ## Development checks
 
@@ -251,6 +272,8 @@ cd frontend
 npm run typecheck
 npm run build
 ```
+
+The repository also contains `.github/workflows/ci.yml`, which runs backend tests and the frontend build on pushes and pull requests.
 
 ## Project structure
 
@@ -282,11 +305,13 @@ CIEL/
 
 ## Current limitations
 
-- Shell commands run directly on the host without approval or sandboxing.
-- Voice output is synchronous and runs for every assistant response.
-- The local vector index uses deterministic hash embeddings as a dependency-free Stage 2 foundation; it is replaceable behind the embedding/vector interfaces.
+- Shell commands still run directly on the host with `shell=True`; there is no approval UI, sandbox, privilege reduction, or allowlist yet.
+- Speech playback is synchronous, although speech failure no longer invalidates or prevents persistence of the generated response.
+- The vector index still uses deterministic hash embeddings rather than a semantic embedding model.
+- Memory consolidation across many historical episodes remains a future intelligence layer; current interaction classification and structured memory storage are implemented.
 - The application accepts only one active interaction at a time.
 - The router prompt currently assumes an Arch Linux host.
+- The web API has no authentication and should remain bound to loopback unless an authentication layer is added.
 
 ## License
 
