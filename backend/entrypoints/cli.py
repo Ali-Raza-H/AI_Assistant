@@ -1,23 +1,19 @@
 from backend.ciel.core.controller import runController
-from backend.ciel.core.router import clearRouterHistory
-from backend.ciel.runtime.chat_history import wipeChatHistory
 from backend.ciel.runtime.logging import log
 from backend.ciel.services.lifeos_notifications import startLifeOSNotificationListener
 
 
-log("info", "main.py: variables created")
+log("info", "cli.py: variables created")
 
 
 def quitCommand():
-    wipeChatHistory()
-    clearRouterHistory()
     print("Goodbye")
-    log("debug", "main.py: quit function executed")
+    log("debug", "cli.py: clean shutdown requested")
     raise SystemExit
 
 
 def llmComs(message):
-    log("debug", "main.py: controller interaction started")
+    log("debug", "cli.py: controller interaction started")
     return runController(message)
 
 
@@ -28,7 +24,7 @@ def main():
         startWebServer()
         print("CIEL interface: http://127.0.0.1:8765")
     except ImportError as error:
-        log("error", f"main.py: web interface unavailable: {error}")
+        log("error", f"cli.py: web interface unavailable: {error}")
         print("CIEL interface unavailable. Install backend requirements to enable it.")
     startLifeOSNotificationListener()
     while True:
@@ -42,12 +38,13 @@ def main():
         if userInput == "/quit":
             quitCommand()
 
+        if not userInput.strip():
+            continue
+
         try:
             llmComs(userInput)
         except Exception as error:
-            # Loop history is deliberately retained so the next interaction
-            # can inspect a request that failed before the router ended it.
-            log("error", f"main.py: request failed: {error}")
+            log("error", f"cli.py: request failed: {error}")
             print(f"Error: {error}")
 
 
