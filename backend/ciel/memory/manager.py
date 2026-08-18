@@ -87,17 +87,33 @@ class MemoryManager:
             )
         return None
 
-    def recall(self, query: str, scopes: list[str] | None = None, limit: int = 8) -> list[dict[str, Any]]:
+    def recall(
+        self,
+        query: str,
+        scopes: list[str] | None = None,
+        limit: int = 8,
+    ) -> list[dict[str, Any]]:
         scopes = scopes or ["episodic", "semantic", "entity", "procedural"]
         episodic = self.episodic.recall(query, limit) if "episodic" in scopes else []
         semantic = self.semantic.recall(query, limit) if "semantic" in scopes else []
-        entities = self.entities.recall(query, limit) if "entity" in scopes or "entities" in scopes else []
+        entities = (
+            self.entities.recall(query, limit)
+            if "entity" in scopes or "entities" in scopes
+            else []
+        )
         procedures = self.procedural.recall(query, limit) if "procedural" in scopes else []
-        return self.retrieval.combine(episodic, semantic, entities, procedures)[:limit]
+        combined = self.retrieval.combine(episodic, semantic, entities, procedures)
+        return self._deduplicate_memories(combined)[:limit]
 
     def retrieve_context(self, request: dict[str, Any]) -> list[dict[str, Any]]:
-        query = str(request.get("query") or "")
-        memories = self.recall(query, request.get("scopes"), limit=int(request.get("limit", 8)))
+        query = str(request.get("query") or "").strip()
+        if not query:
+            return []
+        try:
+            limit = max(1, min(50, int(request.get("limit", 8))))
+        except (TypeError, ValueError):
+            limit = 8
+        memories = self.recall(query, request.get("scopes"), limit=limit)
         for memory in memories:
             if memory.get("scope") == "episodic" and isinstance(memory.get("id"), str):
                 self.reinforce(memory["id"])
@@ -127,22 +143,35 @@ class MemoryManager:
             ORDER BY created_at DESC
             LIMIT ?
             """,
-            (limit,),
+            (max(1, int(limit)),),
         )
         return list(reversed(rows))
 
     def load_chat_history(self, limit: int | None = None) -> list[dict[str, str]]:
-        query = """
-            SELECT user_message, assistant_response
-            FROM interactions
-            WHERE assistant_response IS NOT NULL
-            ORDER BY completed_at ASC
-        """
-        parameters: tuple[Any, ...] = ()
-        if limit is not None:
-            query += " LIMIT ?"
-            parameters = (limit,)
-        rows = self.database.fetch_all(query, parameters)
+        if limit is None:
+            rows = self.database.fetch_all(
+                """
+                SELECT user_message, assistant_response, completed_at
+                FROM interactions
+                WHERE assistant_response IS NOT NULL
+                ORDER BY completed_at ASC
+                """
+            )
+        else:
+            rows = self.database.fetch_all(
+                """
+                SELECT user_message, assistant_response, completed_at
+                FROM (
+                    SELECT user_message, assistant_response, completed_at
+                    FROM interactions
+                    WHERE assistant_response IS NOT NULL
+                    ORDER BY completed_at DESC
+                    LIMIT ?
+                )
+                ORDER BY completed_at ASC
+                """,
+                (max(1, int(limit)),),
+            )
         return [
             {
                 "userMessage": row["user_message"],
@@ -176,7 +205,13 @@ class MemoryManager:
             (interaction_id, session_id, user_message, assistant_response, now, now),
         )
         self._save_message(interaction_id, session_id, "user", user_message, now)
-        self._save_message(interaction_id, session_id, "assistant", assistant_response, now + 0.001)
+        self._save_message(
+            interaction_id,
+            session_id,
+            "assistant",
+            assistant_response,
+            now + 0.001,
+        )
         return interaction_id
 
     def persist_interaction(self, context: InteractionContext) -> None:
@@ -227,13 +262,39 @@ class MemoryManager:
         committed = []
         for candidate in self.classifier.classify(context):
             try:
-                memory_id = self.remember({**candidate, "session_id": context.session_id})
+                memory_id = self.remember(
+                    {
+                        **candidate,
+                        "session_id": context.session_id,
+                        "source_interaction_id": context.interaction_id,
+                    }
+                )
             except (TypeError, ValueError) as error:
                 log("warning", f"memory manager skipped invalid memory candidate: {error}")
                 continue
             if memory_id:
                 committed.append(memory_id)
         return committed
+
+    def _deduplicate_memories(
+        self,
+        memories: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
+        deduplicated = []
+        seen = set()
+        for memory in memories:
+            memory_id = memory.get("id")
+            key = (memory.get("scope"), memory_id)
+            if memory_id is None:
+                key = (
+                    memory.get("scope"),
+                    memory.get("summary") or memory.get("subject") or str(memory),
+                )
+            if key in seen:
+                continue
+            seen.add(key)
+            deduplicated.append(memory)
+        return deduplicated
 
     def _save_message(
         self,
