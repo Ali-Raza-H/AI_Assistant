@@ -38,12 +38,13 @@ function reduceEvent(state: CielState, event: CielEvent): CielState {
         ...next,
         status: 'active',
         stage: 'context',
-        iteration: 1,
+        iteration: 0,
         error: null,
         tools: [],
         observations: [],
         brainDecision: null,
         routerDecision: null,
+        flags: { isLooping: false, doRemember: false },
       }
     case 'context.started':
     case 'context.completed':
@@ -63,6 +64,8 @@ function reduceEvent(state: CielState, event: CielEvent): CielState {
       const decision = data.decision as RouterDecision
       return { ...next, stage: 'router', routerDecision: decision, flags: decision?.flags || state.flags }
     }
+    case 'router.completed':
+      return { ...next, status: 'active', stage: 'router' }
     case 'tools.started':
       return { ...next, stage: 'tools', tools: (data.tools as ToolRecord[]) || [] }
     case 'tool.started':
@@ -84,7 +87,11 @@ function reduceEvent(state: CielState, event: CielEvent): CielState {
     case 'response.started':
     case 'response.token':
     case 'response.completed':
-      return { ...next, stage: 'response', lastResponse: event.type === 'response.completed' ? String(data.response || '') : state.lastResponse }
+      return {
+        ...next,
+        stage: 'response',
+        lastResponse: event.type === 'response.completed' ? String(data.response || '') : state.lastResponse,
+      }
     case 'ciel.started':
     case 'ciel.token':
     case 'ciel.completed':
@@ -92,6 +99,7 @@ function reduceEvent(state: CielState, event: CielEvent): CielState {
     case 'speech.started':
       return { ...next, stage: 'speech' }
     case 'speech.ended':
+    case 'speech.failed':
     case 'history.saved':
       return { ...next, stage: 'controller' }
     case 'interaction.completed':
@@ -112,6 +120,7 @@ export function useCiel() {
   const [streaming, setStreaming] = useState('')
   const [requestError, setRequestError] = useState<string | null>(null)
   const retryRef = useRef<number | undefined>(undefined)
+  const reconnectAttemptsRef = useRef(0)
 
   const refreshChat = useCallback(async () => {
     const result = await getChat()
@@ -123,7 +132,6 @@ export function useCiel() {
       const result = await getDashboard()
       setDashboard(result.sections)
     } catch {
-      // LifeOS data is optional. Its failure should not create broken UI.
       setDashboard({})
     }
   }, [])
@@ -146,13 +154,25 @@ export function useCiel() {
       if (disposed) return
       setConnection('connecting')
       socket = new WebSocket(eventSocketURL())
-      socket.onopen = () => setConnection('online')
+      socket.onopen = () => {
+        reconnectAttemptsRef.current = 0
+        setConnection('online')
+      }
       socket.onmessage = (message) => {
-        const event = JSON.parse(message.data) as CielEvent
+        let event: CielEvent
+        try {
+          event = JSON.parse(message.data) as CielEvent
+        } catch {
+          return
+        }
+        if (!event || typeof event.type !== 'string' || typeof event.timestamp !== 'number') return
+
         if (event.type === 'system.snapshot') {
           const data = event.data as unknown as { state: CielState; events: CielEvent[] }
-          setState(data.state)
-          setEvents(data.events.slice(-120))
+          if (data?.state && Array.isArray(data.events)) {
+            setState(data.state)
+            setEvents(data.events.slice(-120))
+          }
           return
         }
         setEvents((current) => [...current.slice(-119), event])
@@ -177,7 +197,9 @@ export function useCiel() {
         if (disposed) return
         setConnection('offline')
         setState((current) => ({ ...current, status: 'offline' }))
-        retryRef.current = window.setTimeout(connect, 2200)
+        const attempt = reconnectAttemptsRef.current++
+        const delay = Math.min(30_000, 2_000 * 2 ** attempt)
+        retryRef.current = window.setTimeout(connect, delay)
       }
     }
 
