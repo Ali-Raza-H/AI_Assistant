@@ -25,32 +25,47 @@ file = "controller.py"
 
 maxBrainIterations = 10
 _controllerLock = threading.Lock()
+_runtimeSessionId = f"runtime-{uuid.uuid4().hex}"
 
 
 def isControllerBusy():
     return _controllerLock.locked()
 
 
-def runController(userMessage, interactionId=None):
+def runController(userMessage, interactionId=None, sessionId=None):
     interactionId = interactionId or uuid.uuid4().hex
     with _controllerLock:
-        return _runController(userMessage, interactionId)
+        return _runController(
+            userMessage,
+            interactionId,
+            sessionId=sessionId or _runtimeSessionId,
+        )
 
 
-def _runController(userMessage, interactionId):
+def _runController(userMessage, interactionId, sessionId=None):
     memoryManager = MemoryManager()
     contextEngine = ContextEngine(memoryManager)
     brain = CIELBrain()
     actionRouter = ActionRouter()
     observationNormalizer = ObservationNormalizer()
     responseGenerator = ResponseGenerator()
-    context = InteractionContext.create(userMessage, interactionId)
+    context = InteractionContext.create(
+        userMessage,
+        interactionId,
+        session_id=sessionId or _runtimeSessionId,
+    )
 
+    # Compatibility flags remain observable for the legacy UI/API but no longer
+    # control the cognitive loop.
     flags.setFlagState("isLooping", False)
     flags.setFlagState("doRemember", False)
     eventBus.emit(
         "interaction.started",
-        {"interactionId": interactionId, "message": userMessage},
+        {
+            "interactionId": interactionId,
+            "sessionId": context.session_id,
+            "message": userMessage,
+        },
     )
 
     try:
@@ -89,22 +104,13 @@ def _runController(userMessage, interactionId):
             if decision.plan:
                 context.current_plan = decision.plan
             if decision.memory_candidates:
-                context.memory_candidates.extend(decision.memory_candidates)
+                context.add_memory_candidates(decision.memory_candidates)
             eventBus.emit(
                 "brain.decision",
                 {**eventData, "decision": decision.to_dict()},
             )
 
             if decision.state == ACTION_REQUIRED:
-                if not decision.action:
-                    context.add_observation(
-                        {
-                            "success": False,
-                            "summary": "Brain requested action but did not provide an action object.",
-                        }
-                    )
-                    continue
-
                 context.add_action(decision.action)
                 eventBus.emit(
                     "router.started",
@@ -143,22 +149,35 @@ def _runController(userMessage, interactionId):
                 continue
 
             if decision.state == NEED_MEMORY:
-                request = decision.memory_request or {"query": userMessage}
+                request = decision.memory_request
                 eventBus.emit(
                     "memory.retrieval.started",
                     {**eventData, "request": request},
                 )
                 memories = memoryManager.retrieve_context(request)
-                context.retrieved_memories.extend(memories)
+                before = len(context.retrieved_memories)
+                context.add_retrieved_memories(memories)
+                added = len(context.retrieved_memories) - before
                 eventBus.emit(
                     "memory.retrieval.completed",
-                    {**eventData, "memories": memories},
+                    {**eventData, "memories": memories, "added": added},
                 )
+                if added == 0:
+                    context.add_observation(
+                        {
+                            "success": False,
+                            "summary": (
+                                "The requested memory lookup returned no new information. "
+                                "Do not repeat the same memory request without changing the query."
+                            ),
+                            "type": "memory_no_new_results",
+                        }
+                    )
                 continue
 
             if decision.state == NEED_USER:
                 response = responseGenerator.generate(context, decision, stream=False)
-                context.finish("need_user", response)
+                context.finish(NEED_USER, response)
                 break
 
             if decision.state in {COMPLETE, FAILED}:
@@ -170,6 +189,7 @@ def _runController(userMessage, interactionId):
             finalDecision = finalDecision or BrainDecision(
                 state=FAILED,
                 response="I reached the interaction safety limit before completing the task.",
+                result={"error": "safety_limit"},
             )
             safetyDecision = BrainDecision(
                 state=FAILED,
@@ -180,7 +200,7 @@ def _runController(userMessage, interactionId):
                 result=finalDecision.to_dict(),
             )
             response = responseGenerator.generate(context, safetyDecision, stream=False)
-            context.finish("failed", response)
+            context.finish(FAILED, response)
             eventBus.emit(
                 "interaction.safety_limit",
                 {
@@ -219,11 +239,12 @@ def _runController(userMessage, interactionId):
                 "iteration": context.iteration,
                 "response": context.final_response,
                 "status": context.status,
+                "sessionId": context.session_id,
             },
         )
         return context.final_response
     except Exception as error:
-        context.finish("failed", context.final_response)
+        context.finish(FAILED, context.final_response)
         try:
             memoryManager.persist_interaction(context)
         except Exception as persistError:
