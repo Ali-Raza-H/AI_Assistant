@@ -55,8 +55,6 @@ def _runController(userMessage, interactionId, sessionId=None):
         session_id=sessionId or _runtimeSessionId,
     )
 
-    # Compatibility flags remain observable for the legacy UI/API but no longer
-    # control the cognitive loop.
     flags.setFlagState("isLooping", False)
     flags.setFlagState("doRemember", False)
     eventBus.emit(
@@ -254,3 +252,8 @@ def _runController(userMessage, interactionId, sessionId=None):
             {"interactionId": interactionId, "error": str(error)},
         )
         raise
+    finally:
+        try:
+            memoryManager.database.close()
+        except Exception as closeError:
+            log("error", f"{file}: failed to close memory database: {closeError}")
