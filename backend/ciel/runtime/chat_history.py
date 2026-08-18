@@ -1,5 +1,5 @@
-from backend.ciel.runtime.logging import log
 from backend.ciel.memory.manager import MemoryManager
+from backend.ciel.runtime.logging import log
 
 file = "chatHistoryTools.py"
 
@@ -7,7 +7,7 @@ file = "chatHistoryTools.py"
 def loadChatHistory():
     log("debug", f"{file}: load chat history function started")
     chatHistory = MemoryManager().load_chat_history()
-    log("info", f"{file}: chat history returning {chatHistory}")
+    log("info", f"{file}: loaded {len(chatHistory)} chat exchange(s)")
     return chatHistory
 
 
