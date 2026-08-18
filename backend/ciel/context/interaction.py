@@ -39,23 +39,40 @@ class InteractionContext:
             user_message=user_message,
             working_memory={
                 "objective": user_message,
-                "actions": [],
-                "observations": [],
                 "temporary_conclusions": [],
+                "active_assumptions": [],
             },
         )
 
     def add_action(self, action: dict[str, Any]) -> None:
         self.actions.append(action)
-        self.working_memory.setdefault("actions", []).append(action)
 
     def add_observation(self, observation: dict[str, Any]) -> None:
         self.observations.append(observation)
-        self.working_memory.setdefault("observations", []).append(observation)
+
+    def add_retrieved_memories(self, memories: list[dict[str, Any]]) -> None:
+        seen = {
+            (memory.get("scope"), memory.get("id"))
+            for memory in self.retrieved_memories
+            if memory.get("id") is not None
+        }
+        for memory in memories:
+            key = (memory.get("scope"), memory.get("id"))
+            if memory.get("id") is not None and key in seen:
+                continue
+            self.retrieved_memories.append(memory)
+            if memory.get("id") is not None:
+                seen.add(key)
+
+    def add_memory_candidates(self, candidates: list[dict[str, Any]]) -> None:
+        for candidate in candidates:
+            if candidate not in self.memory_candidates:
+                self.memory_candidates.append(candidate)
 
     def finish(self, status: str, response: str | None = None) -> None:
         self.status = status
-        self.final_response = response
+        if response is not None:
+            self.final_response = response
         self.completed_at = time.time()
 
     def to_record(self) -> dict[str, Any]:
