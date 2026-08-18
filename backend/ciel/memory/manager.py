@@ -135,16 +135,33 @@ class MemoryManager:
     def resolve_conflicts(self) -> list[dict]:
         return []
 
-    def recent_conversation(self, limit: int = 12) -> list[dict[str, Any]]:
-        rows = self.database.fetch_all(
-            """
-            SELECT role, content, created_at, interaction_id
-            FROM messages
-            ORDER BY created_at DESC
-            LIMIT ?
-            """,
-            (max(1, int(limit)),),
-        )
+    def recent_conversation(
+        self,
+        limit: int = 12,
+        session_id: str | None = None,
+    ) -> list[dict[str, Any]]:
+        limit = max(1, int(limit))
+        if session_id:
+            rows = self.database.fetch_all(
+                """
+                SELECT role, content, created_at, interaction_id
+                FROM messages
+                WHERE session_id = ?
+                ORDER BY created_at DESC
+                LIMIT ?
+                """,
+                (session_id, limit),
+            )
+        else:
+            rows = self.database.fetch_all(
+                """
+                SELECT role, content, created_at, interaction_id
+                FROM messages
+                ORDER BY created_at DESC
+                LIMIT ?
+                """,
+                (limit,),
+            )
         return list(reversed(rows))
 
     def load_chat_history(self, limit: int | None = None) -> list[dict[str, str]]:
