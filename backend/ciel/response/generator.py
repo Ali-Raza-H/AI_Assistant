@@ -34,17 +34,20 @@ class ResponseGenerator:
             "iteration": context.iteration,
         }
         eventBus.emit("response.started", event_data)
+
         if decision.response and decision.state in {"complete", "need_user", "failed"}:
             response = decision.response
+            if stream:
+                eventBus.emit("response.token", {**event_data, "token": response})
         elif decision.question:
             response = decision.question
+            if stream:
+                eventBus.emit("response.token", {**event_data, "token": response})
         else:
             response = self._generate_from_context(context, decision, stream)
 
         eventBus.emit("response.completed", {**event_data, "response": response})
-        eventBus.emit("speech.started", event_data)
-        speak(response)
-        eventBus.emit("speech.ended", event_data)
+        self._speak_best_effort(response, event_data)
         return response
 
     def _generate_from_context(
@@ -77,3 +80,16 @@ class ResponseGenerator:
             stream=stream,
             on_token=on_token if stream else None,
         )
+
+    def _speak_best_effort(self, response: str, event_data: dict) -> None:
+        eventBus.emit("speech.started", event_data)
+        try:
+            speak(response)
+        except Exception as error:
+            log("error", f"{FILE}: speech failed after response generation: {error}")
+            eventBus.emit(
+                "speech.failed",
+                {**event_data, "error": str(error)},
+            )
+            return
+        eventBus.emit("speech.ended", event_data)
