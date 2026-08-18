@@ -3,44 +3,37 @@ from logging.handlers import RotatingFileHandler
 
 from backend.ciel.runtime.settings import DEBUG_LOG, ERROR_LOG, INFO_LOG
 
-# Log settings
 logForm = "%(asctime)s [%(levelname)s] %(message)s"
 bakCount = 3
 maxSize = 5 * 1024 * 1024
 
 
 def log(logLevel, logMsg):
+    logLevel = str(logLevel).upper()
 
-    logLevel = logLevel.upper()
-
-    # Set log path depending on log level
     if logLevel == "DEBUG":
         logPath = DEBUG_LOG
-    elif logLevel == "INFO":
+    elif logLevel in {"INFO", "WARNING"}:
         logPath = INFO_LOG
     elif logLevel == "ERROR":
         logPath = ERROR_LOG
     else:
-        print(f"ERROR: log level {logLevel} not valid")
-        return
+        raise ValueError(f"Unsupported log level: {logLevel}")
 
-    # Gets numerical values for logging
-    logVal = getattr(logging, logLevel, logging.DEBUG)  # DEBUG is default backup
+    logPath.parent.mkdir(parents=True, exist_ok=True)
+    logVal = getattr(logging, logLevel)
 
-    # Starting the logger
-    logger = logging.getLogger("customLogging")  # Logging instance
-    logger.setLevel(logVal)  # Setting logging levels
+    logger = logging.getLogger("customLogging")
+    logger.setLevel(logVal)
+    logger.propagate = False
 
-    # Setting up file rotation and formatting
     handler = RotatingFileHandler(logPath, maxBytes=maxSize, backupCount=bakCount)
+    handler.setLevel(logVal)
     handler.setFormatter(logging.Formatter(logForm))
     logger.addHandler(handler)
 
     try:
-        # Logging using log level and input message
         logger.log(logVal, logMsg)
-
     finally:
-        # removes handler for optimization
         logger.removeHandler(handler)
         handler.close()
