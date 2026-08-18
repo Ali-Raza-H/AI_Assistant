@@ -7,16 +7,15 @@ class WorkingMemory:
     def create(self, objective: str) -> dict[str, Any]:
         return {
             "objective": objective,
-            "actions": [],
-            "observations": [],
             "temporary_conclusions": [],
+            "active_assumptions": [],
         }
 
     def reduce(self, memory: dict[str, Any], limit: int = 8) -> dict[str, Any]:
         reduced = dict(memory)
-        for key in ("actions", "observations", "temporary_conclusions"):
-            if isinstance(reduced.get(key), list):
-                reduced[key] = reduced[key][-limit:]
+        for key, value in list(reduced.items()):
+            if isinstance(value, list):
+                reduced[key] = value[-limit:]
         return reduced
 
     def clear(self, memory: dict[str, Any]) -> None:
