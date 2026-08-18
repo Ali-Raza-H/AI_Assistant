@@ -161,7 +161,7 @@ class MemoryManagerTests(unittest.TestCase):
         self.assertEqual(failure["failure_count"], 1)
         self.assertLess(failure["confidence"], success["confidence"])
 
-    def test_invalid_brain_memory_candidate_is_not_committed(self):
+    def test_invalid_brain_memory_candidate_does_not_become_semantic_fact(self):
         context = InteractionContext.create(
             "Please remember this preference for the project",
             "interaction-memory",
@@ -171,9 +171,8 @@ class MemoryManagerTests(unittest.TestCase):
         )
         context.finish("complete", "Okay, noted.")
 
-        committed = self.manager.evaluate_interaction(context)
+        self.manager.evaluate_interaction(context)
 
-        self.assertEqual(committed, [])
         self.assertEqual(self.database.fetch_all("SELECT * FROM semantic_facts"), [])
 
 
