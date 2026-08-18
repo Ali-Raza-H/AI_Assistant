@@ -12,13 +12,18 @@ class ContextEngine:
         self.memory_manager = memory_manager or MemoryManager()
 
     def prepare_interaction(self, context: InteractionContext) -> None:
-        context.conversation_context = self.memory_manager.recent_conversation(limit=12)
-        context.retrieved_memories = self.memory_manager.retrieve_context(
-            {
-                "query": context.user_message,
-                "session_id": context.session_id,
-                "interaction_id": context.interaction_id,
-            }
+        context.conversation_context = self.memory_manager.recent_conversation(
+            limit=12,
+            session_id=context.session_id,
+        )
+        context.add_retrieved_memories(
+            self.memory_manager.retrieve_context(
+                {
+                    "query": context.user_message,
+                    "session_id": context.session_id,
+                    "interaction_id": context.interaction_id,
+                }
+            )
         )
 
     def build_brain_context(self, context: InteractionContext) -> dict[str, Any]:
@@ -39,7 +44,7 @@ class ContextEngine:
 
     def _compact_working_memory(self, working_memory: dict[str, Any]) -> dict[str, Any]:
         compact = dict(working_memory)
-        for key in ("actions", "observations"):
-            if isinstance(compact.get(key), list):
-                compact[key] = compact[key][-8:]
+        for key, value in list(compact.items()):
+            if isinstance(value, list) and len(value) > 8:
+                compact[key] = value[-8:]
         return compact
