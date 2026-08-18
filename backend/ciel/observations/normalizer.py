@@ -11,11 +11,26 @@ class ObservationNormalizer:
         tool_execution: dict[str, Any],
     ) -> dict[str, Any]:
         results = tool_execution.get("results") or []
-        success = all(result.get("success") is True for result in results) if results else True
+        tools = routed_action.get("tools") or []
+        success = bool(results) and all(
+            result.get("success") is True for result in results
+        )
         summaries = [self._summarize_result(result) for result in results]
+
+        if not tools:
+            summaries.insert(
+                0,
+                "The Brain requested an action, but the Action Router produced no executable tool calls.",
+            )
+        elif not results:
+            summaries.insert(
+                0,
+                "The Action Router selected tools, but no execution results were produced.",
+            )
+
         return {
             "action": action,
-            "routed_tools": routed_action.get("tools", []),
+            "routed_tools": tools,
             "success": success,
             "summary": "\n".join(summary for summary in summaries if summary).strip(),
             "result_count": len(results),
