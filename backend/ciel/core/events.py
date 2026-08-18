@@ -52,7 +52,6 @@ class CIELEventBus:
             try:
                 subscriber.put_nowait(payload)
             except queue.Full:
-                # A slow browser must not block CIEL or the TUI.
                 try:
                     subscriber.get_nowait()
                     subscriber.put_nowait(payload)
@@ -108,15 +107,17 @@ class CIELEventBus:
             "ciel.completed": "ciel",
             "speech.started": "speech",
             "speech.ended": "controller",
+            "speech.failed": "controller",
             "history.saved": "controller",
         }
         if eventType == "interaction.started":
             self._state.update(
                 {
                     "status": "active",
-                    "stage": "router",
+                    "stage": "context",
                     "interactionId": data.get("interactionId"),
-                    "iteration": 1,
+                    "iteration": 0,
+                    "flags": {"isLooping": False, "doRemember": False},
                     "brainDecision": None,
                     "routerDecision": None,
                     "tools": [],
@@ -152,7 +153,10 @@ class CIELEventBus:
             self._state["tools"] = copy.deepcopy(data.get("tools") or [])
         elif eventType == "tool.completed":
             toolIndex = data.get("index")
-            if isinstance(toolIndex, int) and toolIndex < len(self._state["tools"]):
+            if (
+                isinstance(toolIndex, int)
+                and 0 <= toolIndex < len(self._state["tools"])
+            ):
                 self._state["tools"][toolIndex] = copy.deepcopy(data.get("result"))
         elif eventType == "flags.updated":
             self._state["flags"] = copy.deepcopy(data.get("flags") or {})
