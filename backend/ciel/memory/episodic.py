@@ -6,7 +6,7 @@ import uuid
 from typing import Any
 
 from backend.ciel.memory.database.sqlite import MemoryDatabase
-from backend.ciel.memory.scoring import memory_score
+from backend.ciel.memory.scoring import memory_recency_factor, memory_score
 from backend.ciel.memory.vector.store import VectorStore
 
 
@@ -25,8 +25,10 @@ class EpisodicMemory:
         source_message_ids: list[str] | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> str:
-        if not summary.strip():
+        summary = summary.strip()
+        if not summary:
             raise ValueError("Episodic memories require a summary")
+        importance = min(1.0, max(0.0, float(importance)))
         memory_id = uuid.uuid4().hex
         self.database.execute(
             """
@@ -49,7 +51,7 @@ class EpisodicMemory:
                 json.dumps(metadata or {}),
             ),
         )
-        if self.vector_store is not None and summary.strip():
+        if self.vector_store is not None:
             index_text = " ".join(
                 part
                 for part in (
@@ -63,6 +65,7 @@ class EpisodicMemory:
         return memory_id
 
     def recall(self, query: str, limit: int = 5) -> list[dict[str, Any]]:
+        limit = max(1, int(limit))
         terms = [term for term in query.lower().split() if len(term) > 2]
         rows = self.database.fetch_all(
             """
@@ -71,9 +74,10 @@ class EpisodicMemory:
             ORDER BY timestamp DESC
             LIMIT ?
             """,
-            (max(limit * 4, limit),),
+            (max(limit * 6, limit),),
         )
         scored_by_id = {}
+        now = time.time()
         for row in rows:
             text = " ".join(
                 [
@@ -85,15 +89,15 @@ class EpisodicMemory:
             lexical_score = sum(1 for term in terms if term in text)
             if lexical_score or not terms:
                 row["_score"] = memory_score(
-                    semantic_relevance=max(lexical_score, 1),
+                    semantic_relevance=max(float(lexical_score), 1.0),
                     importance=float(row.get("importance") or 0.5),
-                    recency_factor=1.0,
+                    recency_factor=memory_recency_factor(row.get("timestamp"), now=now),
                     reinforcement_factor=1.0 + float(row.get("memory_strength") or 0.5),
                 )
                 scored_by_id[row["id"]] = row
 
         if self.vector_store is not None and query.strip():
-            for hit in self.vector_store.search(query, limit=max(limit * 4, limit)):
+            for hit in self.vector_store.search(query, limit=max(limit * 6, limit)):
                 memory_id = hit.get("memory_id")
                 if not isinstance(memory_id, str):
                     continue
@@ -110,7 +114,7 @@ class EpisodicMemory:
                     memory_score(
                         semantic_relevance=max(vector_score, 0.01),
                         importance=float(row.get("importance") or 0.5),
-                        recency_factor=1.0,
+                        recency_factor=memory_recency_factor(row.get("timestamp"), now=now),
                         reinforcement_factor=1.0 + float(row.get("memory_strength") or 0.5),
                     ),
                 )
@@ -127,7 +131,7 @@ class EpisodicMemory:
             SET access_count = access_count + 1,
                 last_accessed = ?,
                 memory_strength = MIN(memory_strength + 0.05, 1.0)
-            WHERE id = ?
+            WHERE id = ? AND status = 'active'
             """,
             (time.time(), memory_id),
         )
