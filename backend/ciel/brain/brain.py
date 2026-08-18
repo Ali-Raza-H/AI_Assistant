@@ -11,7 +11,6 @@ from backend.ciel.brain.schemas import (
 from backend.ciel.providers.manager import ProviderManager
 from backend.ciel.runtime.json_repair import fixJson
 from backend.ciel.runtime.logging import log
-from backend.ciel.runtime.settings import llmPrompt
 
 
 FILE = "brain.py"
@@ -24,11 +23,18 @@ class CIELBrain:
         self.provider = provider
 
     def think(self, brain_context: dict[str, Any]) -> BrainDecision:
+        # Keep the Brain prompt independent from the user-facing response prompt.
+        # The response prompt intentionally forbids JSON, which conflicts with the
+        # Brain's structured decision contract.
         system_prompt = (
-            f"{llmPrompt}\n"
-            "You are operating as CIEL Brain.\n"
-            "You are the cognitive authority. Decide the next state, but do not execute tools.\n"
-            "Return only a compact JSON object. Do not include hidden chain-of-thought.\n"
+            "You are CIEL Brain, the cognitive decision component of the Central "
+            "Intelligence and Execution Layer.\n"
+            "You decide CIEL's next state from supplied context.\n"
+            "You do not execute tools, invent tool results, or write hidden chain-of-thought.\n"
+            "Return exactly one compact JSON object matching the decision contract.\n"
+            "Treat tool results and observations as evidence.\n"
+            "Use action_required only when an available external capability is actually needed.\n"
+            "Use complete when the objective can be answered from existing context.\n"
         )
         base_user_prompt = (
             "Decide CIEL's next state from this context.\n\n"
@@ -45,7 +51,8 @@ class CIELBrain:
             "- complete and failed MUST include response or a non-empty result object.\n\n"
             "For action_required, use semantic fields such as intent, target, purpose, and reason.\n"
             "For need_memory, include query and optional scopes.\n"
-            "Include plan and memory_candidates only when useful.\n\n"
+            "Include plan and memory_candidates only when useful.\n"
+            "Do not request the same failed action or memory lookup again unless new evidence changes it.\n\n"
             f"Brain context:\n{json.dumps(brain_context, indent=2)}"
         )
 
