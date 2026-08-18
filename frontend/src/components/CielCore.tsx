@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import type { CielState, ConnectionState } from '../types'
+import type { CielState, ConnectionState } from '../state/types'
 
 type VisualMode = 'idle' | 'listening' | 'routing' | 'working' | 'speaking' | 'error' | 'offline'
 
@@ -9,7 +9,7 @@ function modeFor(state: CielState, connection: ConnectionState, listening: boole
   if (state.stage === 'speech') return 'speaking'
   if (state.stage === 'router') return 'routing'
   if (state.stage === 'tools') return 'working'
-  if (state.stage === 'ciel') return 'working'
+  if (['context', 'memory', 'brain', 'observation', 'response', 'controller'].includes(state.stage)) return 'working'
   if (listening) return 'listening'
   return 'idle'
 }

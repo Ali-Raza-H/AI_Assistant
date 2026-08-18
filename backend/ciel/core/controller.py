@@ -1,0 +1,235 @@
+import threading
+import uuid
+
+from backend.ciel.actions.router import ActionRouter
+from backend.ciel.brain.brain import CIELBrain
+from backend.ciel.brain.schemas import (
+    ACTION_REQUIRED,
+    COMPLETE,
+    FAILED,
+    NEED_MEMORY,
+    NEED_USER,
+    BrainDecision,
+)
+from backend.ciel.context.engine import ContextEngine
+from backend.ciel.context.interaction import InteractionContext
+from backend.ciel.core.events import eventBus
+from backend.ciel.core.tool_dispatcher import executeToolCalls
+from backend.ciel.memory.manager import MemoryManager
+from backend.ciel.observations.normalizer import ObservationNormalizer
+from backend.ciel.response.generator import ResponseGenerator
+from backend.ciel.runtime.flags import flags
+from backend.ciel.runtime.logging import log
+
+file = "controller.py"
+
+maxBrainIterations = 10
+_controllerLock = threading.Lock()
+
+
+def isControllerBusy():
+    return _controllerLock.locked()
+
+
+def runController(userMessage, interactionId=None):
+    interactionId = interactionId or uuid.uuid4().hex
+    with _controllerLock:
+        return _runController(userMessage, interactionId)
+
+
+def _runController(userMessage, interactionId):
+    memoryManager = MemoryManager()
+    contextEngine = ContextEngine(memoryManager)
+    brain = CIELBrain()
+    actionRouter = ActionRouter()
+    observationNormalizer = ObservationNormalizer()
+    responseGenerator = ResponseGenerator()
+    context = InteractionContext.create(userMessage, interactionId)
+
+    flags.setFlagState("isLooping", False)
+    flags.setFlagState("doRemember", False)
+    eventBus.emit(
+        "interaction.started",
+        {"interactionId": interactionId, "message": userMessage},
+    )
+
+    try:
+        eventBus.emit("context.started", {"interactionId": interactionId})
+        eventBus.emit(
+            "memory.retrieval.started",
+            {"interactionId": interactionId, "query": userMessage},
+        )
+        contextEngine.prepare_interaction(context)
+        eventBus.emit(
+            "memory.retrieval.completed",
+            {
+                "interactionId": interactionId,
+                "memories": context.retrieved_memories,
+            },
+        )
+        eventBus.emit(
+            "context.completed",
+            {
+                "interactionId": interactionId,
+                "conversationItems": len(context.conversation_context),
+                "retrievedMemories": len(context.retrieved_memories),
+            },
+        )
+
+        finalDecision = None
+        for iteration in range(1, maxBrainIterations + 1):
+            context.iteration = iteration
+            eventData = {"interactionId": interactionId, "iteration": iteration}
+            brainContext = contextEngine.build_brain_context(context)
+
+            eventBus.emit("brain.started", eventData)
+            decision = brain.think(brainContext)
+            finalDecision = decision
+            context.brain_decisions.append(decision.to_dict())
+            if decision.plan:
+                context.current_plan = decision.plan
+            if decision.memory_candidates:
+                context.memory_candidates.extend(decision.memory_candidates)
+            eventBus.emit(
+                "brain.decision",
+                {**eventData, "decision": decision.to_dict()},
+            )
+
+            if decision.state == ACTION_REQUIRED:
+                if not decision.action:
+                    context.add_observation(
+                        {
+                            "success": False,
+                            "summary": "Brain requested action but did not provide an action object.",
+                        }
+                    )
+                    continue
+
+                context.add_action(decision.action)
+                eventBus.emit(
+                    "router.started",
+                    {**eventData, "action": decision.action},
+                )
+                routedAction = actionRouter.route(decision.action, brainContext)
+                context.routed_actions.append(routedAction)
+                eventBus.emit(
+                    "router.completed",
+                    {**eventData, "decision": routedAction},
+                )
+                eventBus.emit(
+                    "router.decision",
+                    {**eventData, "decision": routedAction},
+                )
+                eventBus.emit(
+                    "tools.started",
+                    {**eventData, "tools": routedAction.get("tools", [])},
+                )
+                toolExecution = executeToolCalls(
+                    routedAction,
+                    interactionId=interactionId,
+                    iteration=iteration,
+                )
+                context.tool_results.append(toolExecution)
+                observation = observationNormalizer.normalize(
+                    decision.action,
+                    routedAction,
+                    toolExecution,
+                )
+                context.add_observation(observation)
+                eventBus.emit(
+                    "observation.created",
+                    {**eventData, "observation": observation},
+                )
+                continue
+
+            if decision.state == NEED_MEMORY:
+                request = decision.memory_request or {"query": userMessage}
+                eventBus.emit(
+                    "memory.retrieval.started",
+                    {**eventData, "request": request},
+                )
+                memories = memoryManager.retrieve_context(request)
+                context.retrieved_memories.extend(memories)
+                eventBus.emit(
+                    "memory.retrieval.completed",
+                    {**eventData, "memories": memories},
+                )
+                continue
+
+            if decision.state == NEED_USER:
+                response = responseGenerator.generate(context, decision, stream=False)
+                context.finish("need_user", response)
+                break
+
+            if decision.state in {COMPLETE, FAILED}:
+                response = responseGenerator.generate(context, decision)
+                context.finish(decision.state, response)
+                break
+
+        if context.final_response is None:
+            finalDecision = finalDecision or BrainDecision(
+                state=FAILED,
+                response="I reached the interaction safety limit before completing the task.",
+            )
+            safetyDecision = BrainDecision(
+                state=FAILED,
+                response=(
+                    "I reached the interaction safety limit before completing the task. "
+                    "Here is the best available state from the work so far."
+                ),
+                result=finalDecision.to_dict(),
+            )
+            response = responseGenerator.generate(context, safetyDecision, stream=False)
+            context.finish("failed", response)
+            eventBus.emit(
+                "interaction.safety_limit",
+                {
+                    "interactionId": interactionId,
+                    "iteration": maxBrainIterations,
+                },
+            )
+
+        eventBus.emit(
+            "memory.evaluation.started",
+            {"interactionId": interactionId},
+        )
+        memoryManager.persist_interaction(context)
+        committedMemories = (
+            memoryManager.evaluate_interaction(context)
+            if context.status == COMPLETE
+            else []
+        )
+        context.working_memory.clear()
+        eventBus.emit(
+            "memory.committed",
+            {
+                "interactionId": interactionId,
+                "memoryIds": committedMemories,
+            },
+        )
+        eventBus.emit("history.saved", {"interactionId": interactionId})
+        log(
+            "info",
+            f"{file}: interaction completed after {context.iteration} iteration(s)",
+        )
+        eventBus.emit(
+            "interaction.completed",
+            {
+                "interactionId": interactionId,
+                "iteration": context.iteration,
+                "response": context.final_response,
+                "status": context.status,
+            },
+        )
+        return context.final_response
+    except Exception as error:
+        context.finish("failed", context.final_response)
+        try:
+            memoryManager.persist_interaction(context)
+        except Exception as persistError:
+            log("error", f"{file}: failed to persist failed interaction: {persistError}")
+        eventBus.emit(
+            "interaction.failed",
+            {"interactionId": interactionId, "error": str(error)},
+        )
+        raise

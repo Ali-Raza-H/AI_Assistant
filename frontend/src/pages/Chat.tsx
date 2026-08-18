@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { Composer } from '../components/Composer'
-import type { ChatMessage, CielState } from '../types'
+import type { ChatMessage, CielState } from '../state/types'
 
 function removeRepeatedCyclePrompts(messages: ChatMessage[]) {
   let lastUser = ''

@@ -1,11 +1,15 @@
-import type { CielEvent, CielState } from '../types'
+import type { CielEvent, CielState } from '../state/types'
 
 const stages = [
-  { key: 'router', index: '01', name: 'Router', detail: 'Intent + routing' },
-  { key: 'tools', index: '02', name: 'Tools', detail: 'Ordered execution' },
-  { key: 'ciel', index: '03', name: 'CIEL', detail: 'Response synthesis' },
-  { key: 'speech', index: '04', name: 'Voice', detail: 'Blocking output' },
-  { key: 'controller', index: '05', name: 'Control', detail: 'History + loop' },
+  { key: 'context', index: '01', name: 'Context', detail: 'Session + working set' },
+  { key: 'memory', index: '02', name: 'Memory', detail: 'Selective retrieval' },
+  { key: 'brain', index: '03', name: 'Brain', detail: 'Decision state' },
+  { key: 'router', index: '04', name: 'Router', detail: 'Action translation' },
+  { key: 'tools', index: '05', name: 'Tools', detail: 'Ordered execution' },
+  { key: 'observation', index: '06', name: 'Observe', detail: 'Normalize results' },
+  { key: 'response', index: '07', name: 'Response', detail: 'User-facing output' },
+  { key: 'speech', index: '08', name: 'Voice', detail: 'Blocking output' },
+  { key: 'controller', index: '09', name: 'Control', detail: 'Persist + cleanup' },
 ]
 
 function timeLabel(timestamp: number) {
@@ -53,7 +57,7 @@ export function Brain({ state, events }: { state: CielState; events: CielEvent[]
 
       <div className="brain-grid">
         <section className="brain-panel flags-panel">
-          <header><span>Controller flags</span><small>LIVE</small></header>
+          <header><span>Compatibility flags</span><small>ROUTER</small></header>
           <div className="flag-readout">
             <div>
               <small>IS LOOPING</small>
@@ -64,6 +68,11 @@ export function Brain({ state, events }: { state: CielState; events: CielEvent[]
               <strong className={state.flags.doRemember ? 'on' : ''}>{state.flags.doRemember ? 'TRUE' : 'FALSE'}</strong>
             </div>
           </div>
+        </section>
+
+        <section className="brain-panel decision-panel">
+          <header><span>Brain decision</span><small>JSON</small></header>
+          <pre>{state.brainDecision ? JSON.stringify(state.brainDecision, null, 2) : '// Awaiting brain decision'}</pre>
         </section>
 
         <section className="brain-panel tools-panel">
@@ -86,6 +95,11 @@ export function Brain({ state, events }: { state: CielState; events: CielEvent[]
         <section className="brain-panel decision-panel">
           <header><span>Router decision</span><small>JSON</small></header>
           <pre>{state.routerDecision ? JSON.stringify(state.routerDecision, null, 2) : '// Awaiting router output'}</pre>
+        </section>
+
+        <section className="brain-panel decision-panel">
+          <header><span>Observations</span><small>{String(state.observations.length).padStart(2, '0')}</small></header>
+          <pre>{state.observations.length ? JSON.stringify(state.observations.slice(-3), null, 2) : '// No observations yet'}</pre>
         </section>
 
         <section className="brain-panel event-panel">

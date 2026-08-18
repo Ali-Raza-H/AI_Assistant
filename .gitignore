@@ -16,11 +16,12 @@ lib/
 lib64/
 parts/
 sdist/
-var/
+/var/
 *.egg-info/
 .installed.cfg
 *.egg
-tests/
+/tests/
+backend/tests/legacy/
 .pytest_cache/
 # Virtual Environment
 venv/
@@ -38,6 +39,9 @@ Thumbs.db
 .dev.json
 
 logs/
+backend/var/
+backend/memory/*.db
+backend/memory/*.db-*
 
 .log
 

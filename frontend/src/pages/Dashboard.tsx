@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { CielCore } from '../components/CielCore'
 import { Composer } from '../components/Composer'
 import { DataPanel, findItems } from '../components/DataPanel'
-import type { CielState, ConnectionState, DashboardSections } from '../types'
+import type { CielState, ConnectionState, DashboardSections } from '../state/types'
 
 interface DashboardProps {
   state: CielState

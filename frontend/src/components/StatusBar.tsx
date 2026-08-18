@@ -1,4 +1,4 @@
-import type { CielState, ConnectionState } from '../types'
+import type { CielState, ConnectionState } from '../state/types'
 
 export function StatusBar({ state, connection }: { state: CielState; connection: ConnectionState }) {
   const status = connection === 'online' ? state.status : connection

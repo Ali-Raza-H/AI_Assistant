@@ -1,21 +1,24 @@
 # CIEL
 
-**Central Intelligence and Execution Layer** — a local-first personal AI assistant with a local tool router, a hosted response model, voice output, and an observable web interface.
+**Central Intelligence and Execution Layer** — a personal AI assistant with a brain-centered runtime loop, modular memory, a Groq-backed action router, local/tool execution, voice output, and an observable web interface.
 
-CIEL uses Ollama to decide whether a request needs tools, executes the selected actions, and sends the results to an OpenAI-compatible model endpoint for the final response. It can work with the local shell and, optionally, a LifeOS instance for tasks, projects, calendar events, notes, habits, and other personal data.
+CIEL uses its primary response model as the central "Brain" that decides whether to answer, ask for clarification, retrieve memory, or request an action. Groq translates requested actions into valid tool calls. The controller executes those calls, turns results into observations, returns them to the Brain, and persists the completed interaction through SQLite-backed memory.
 
 > [!WARNING]
 > CIEL is experimental software. Its `runBash` tool executes model-selected commands through the host shell with `shell=True`. There is currently no sandbox or confirmation step. Run it only in an environment where you understand and accept that risk.
 
 ## Highlights
 
-- Local routing through an Ollama model with schema-validated JSON output
-- Multi-step Router → Tools → CIEL control loop with a five-iteration safety limit
+- Brain-owned Think → Act → Observe loop with a controller-enforced safety limit
+- Interaction-local context and working memory instead of global cognitive state
+- Pre-reasoning memory retrieval through a central `MemoryManager`
+- SQLite-backed raw conversation, session, episodic, semantic, entity, relationship, procedure, and vector-index storage
+- Fast Groq action routing with schema-guided, locally validated JSON output
 - Shell execution for direct interaction with the host system
 - Optional authenticated LifeOS reads, writes, dashboard data, and notification polling
-- Streaming React interface with live state, tool, flag, and event visibility
+- Streaming React interface with live context, memory, brain, router, tool, observation, response, and event visibility
 - Terminal interface and spoken responses using Kokoro TTS
-- JSON-backed chat and router history plus rotating application logs
+- Rotating application logs and compatibility wrappers for the old `backend/main.py` and `backend/server.py` launch paths
 
 ## How it works
 
@@ -23,33 +26,42 @@ CIEL uses Ollama to decide whether a request needs tools, executes the selected 
 flowchart LR
     U[User] --> I[CLI or React UI]
     I --> C[Controller]
-    C --> R[Local Ollama router]
-    R --> T{Tools needed?}
-    T -->|Yes| B[Host shell]
-    T -->|Yes| L[LifeOS API]
-    T -->|No| F[Response model]
-    B --> F
-    L --> F
+    C --> X[Context engine]
+    X --> M[Memory manager]
+    M --> X
+    X --> BRAIN[CIEL Brain]
+    BRAIN -->|Action required| R[Groq action router]
+    R --> T[Tool dispatcher]
+    T --> SH[Host shell]
+    T --> L[LifeOS API]
+    SH --> O[Observation]
+    L --> O
+    O --> BRAIN
+    BRAIN -->|Need memory| M
+    BRAIN -->|Complete or failed| F[Response generator]
     F --> V[Kokoro voice output]
-    F --> H[Chat history]
-    F --> C
+    F --> H[(SQLite memory DB)]
     C --> I
 ```
 
 For every request, the controller:
 
-1. asks the local Ollama model for a schema-valid routing decision;
-2. runs the selected tools in order;
-3. gives the user request and tool results to the configured response model;
-4. streams, stores, and speaks the response; and
-5. repeats only when the router flags indicate that another cycle is needed.
+1. creates an `InteractionContext` with isolated working memory;
+2. retrieves relevant long-term memory before reasoning;
+3. asks CIEL Brain for a structured decision;
+4. routes requested semantic actions through Groq only when execution is needed;
+5. runs selected tools and normalizes results as observations;
+6. repeats until the Brain returns complete, failed, or need-user;
+7. generates, streams, speaks, and persists one final response; and
+8. evaluates whether the interaction contains durable memories.
 
 ## Requirements
 
 - Linux; the current router prompt and shell tooling are designed around Arch Linux
 - Python 3.14 or newer
 - Node.js and npm
-- A running [Ollama](https://ollama.com/) service with a downloaded chat model
+- A Groq API key and router model
+- Internet access to the Groq API and the configured response-model endpoint
 - An API key, model name, and OpenAI-compatible base URL for the response model
 - An audio output device; Kokoro uses `sounddevice` and may require PortAudio packages from your distribution
 - Optional: a compatible LifeOS server and assistant API key
@@ -69,7 +81,7 @@ Create a Python environment and install the backend dependencies:
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install -r backend/data/install/requirements.txt
+python -m pip install -r backend/requirements.txt
 ```
 
 Install and build the frontend:
@@ -81,15 +93,6 @@ npm run build
 cd ..
 ```
 
-Make sure Ollama is running, then download the model you intend to use as the router:
-
-```bash
-ollama serve
-ollama pull <router-model>
-```
-
-If Ollama already runs as a service, only the `ollama pull` command is needed.
-
 ## Configuration
 
 Create `backend/.env`:
@@ -100,8 +103,15 @@ GEMINI_API=your-api-key
 GEMINI_PROV=your-openai-compatible-base-url
 GOOGLE_CIEL_MODEL=your-model-name
 
-# Local router (required)
-OLLAMA_ROUTER_MODEL=your-local-ollama-model
+# Groq router (required)
+GROQ_API_KEY=your-groq-api-key
+GROQ_ROUTER_MODEL=openai/gpt-oss-20b
+
+# Groq router (optional; defaults shown)
+GROQ_BASE_URL=https://api.groq.com/openai/v1
+GROQ_TIMEOUT_SECONDS=30
+GROQ_MAX_RETRIES=2
+GROQ_RETRY_BACKOFF_SECONDS=0.5
 
 # LifeOS integration (optional)
 LIFEOS_BASE_URL=http://127.0.0.1:5000
@@ -119,13 +129,15 @@ CIEL_WEB_PORT=8765
 
 The response provider is called “Gemini” in the current source, but it is accessed through the OpenAI Python client's Chat Completions interface. `GEMINI_PROV` must therefore be the OpenAI-compatible base URL exposed by your provider.
 
+The legacy Groq names `GROQ_API`, `GROQ_MODEL`, and `GROQ_PROV` are still accepted, so existing local configuration does not need to change immediately. GPT-OSS models use Groq's JSON Schema mode; other supported models fall back to JSON Object mode. Every result is validated locally before tool execution.
+
 LifeOS is optional. Leave `LIFEOS_API_KEY` empty and notifications disabled when it is not in use. The dashboard will continue to work without LifeOS data.
 
 `backend/.env` is ignored by Git. Never commit API keys or other secrets.
 
 ## Running CIEL
 
-Run commands from the repository root so the backend can resolve its schema, history, and log paths.
+Run commands from the repository root so the backend can resolve its schema, memory, and log paths.
 
 ### Terminal and web interface
 
@@ -133,10 +145,16 @@ After building the frontend, start the combined application:
 
 ```bash
 source .venv/bin/activate
-python backend/main.py
+python -m backend.entrypoints.cli
 ```
 
 The web interface is available at <http://127.0.0.1:8765>, while the same process also accepts terminal input. Enter `/quit` to stop the terminal application.
+
+The legacy command still works and delegates to the same entrypoint:
+
+```bash
+python backend/main.py
+```
 
 > [!NOTE]
 > `/quit` clears both chat history and transient router history before exiting.
@@ -145,10 +163,16 @@ The web interface is available at <http://127.0.0.1:8765>, while the same proces
 
 ```bash
 source .venv/bin/activate
-python backend/server.py
+python -m backend.entrypoints.web
 ```
 
 This serves the built React application and API on <http://127.0.0.1:8765>.
+
+The legacy command still works and delegates to the same entrypoint:
+
+```bash
+python backend/server.py
+```
 
 ### Frontend development
 
@@ -157,7 +181,7 @@ Run the API and Vite development server in separate terminals:
 ```bash
 # Terminal 1, from the repository root
 source .venv/bin/activate
-python backend/server.py
+python -m backend.entrypoints.web
 ```
 
 ```bash
@@ -174,9 +198,9 @@ The React application has three views:
 
 - **Dashboard** — assistant input plus optional LifeOS tasks, notifications, and calendar data
 - **Chat** — persisted conversation history and live response streaming
-- **Brain** — operational pipeline stage, controller flags, tool queue, router decision, and recent events
+- **Brain** — operational pipeline stage, brain decision, compatibility flags, tool queue, router decision, observations, and recent events
 
-The Brain view exposes operational state only; it does not expose private model reasoning.
+The Brain view exposes structured operational state only; it does not expose private model reasoning.
 
 ## Tools
 
@@ -205,22 +229,19 @@ Only one controller interaction runs at a time. A concurrent message request rec
 
 ## Data and logs
 
-CIEL currently stores state in repository-local JSON files:
+CIEL stores runtime state in repository-local files:
 
-- `backend/schemas/history/chatHistory.json` — conversation history
-- `backend/schemas/history/routerHistory.json` — temporary multi-cycle routing context
-- `backend/data/logs/` — rotating debug, info, and error logs
+- `backend/memory/ciel.db` — SQLite source of truth for sessions, raw messages, interactions, episodic memories, semantic facts, entities, relationships, procedures, and the local vector index
+- `backend/var/logs/` — rotating debug, info, and error logs
 
-Chat history is included in response-model context. Treat these files as private if conversations or LifeOS results contain personal information.
+Raw conversation history and durable memory are separate concepts. The context engine selectively retrieves recent conversation and long-term memory rather than injecting complete histories. Treat these files as private if conversations or LifeOS results contain personal information.
 
 ## Development checks
 
 Run the backend regression tests:
 
 ```bash
-cd backend
-python -m unittest test_lifeos_notifications.py
-cd ..
+python -m unittest discover -s backend/tests -p "test_*.py"
 ```
 
 Type-check and build the frontend:
@@ -236,18 +257,26 @@ npm run build
 ```text
 CIEL/
 ├── backend/
-│   ├── main.py                 # Combined terminal and web entry point
-│   ├── server.py               # FastAPI and WebSocket server
-│   ├── modules/                # Tool validation and execution
-│   ├── src/
-│   │   ├── controller.py       # Multi-cycle orchestration
-│   │   ├── router.py           # Ollama routing and validation
-│   │   ├── ciel.py             # Final response and speech pipeline
-│   │   ├── providers/          # Model provider adapters
-│   │   └── tools/              # History, LifeOS, flags, logs, and TTS
-│   └── schemas/                # Router contracts and persisted history
+│   ├── entrypoints/             # CLI and FastAPI launch modules
+│   ├── ciel/
+│   │   ├── actions/             # Brain action to tool-call routing
+│   │   ├── brain/               # Structured CIEL Brain decisions
+│   │   ├── context/             # Interaction context and context assembly
+│   │   ├── core/                # Controller, routing, response compatibility, events, dispatch
+│   │   ├── agent_tools/         # AI-callable shell and LifeOS capabilities
+│   │   ├── memory/              # SQLite-backed working, episodic, semantic, entity, procedural, and vector memory
+│   │   ├── providers/           # Model-provider adapters
+│   │   ├── response/            # Final response generation
+│   │   ├── runtime/             # Settings, histories, logging, flags, JSON, TTS
+│   │   └── services/            # Independent background services
+│   ├── resources/schemas/       # Router contracts, catalog, and examples
+│   ├── tests/                   # Categorized automated and legacy tests
+│   ├── var/                     # Runtime histories and logs
+│   └── requirements.txt
+├── cielVault/                   # CIEL's Obsidian vault
 ├── frontend/
-│   └── src/                    # React/Vite interface
+│   └── src/                     # App, API, state, components, pages, styles
+├── unaccounted/                 # Preserved artifacts outside the runtime layout
 └── pyproject.toml
 ```
 
@@ -255,7 +284,7 @@ CIEL/
 
 - Shell commands run directly on the host without approval or sandboxing.
 - Voice output is synchronous and runs for every assistant response.
-- History and logs are local JSON/text files rather than a database.
+- The local vector index uses deterministic hash embeddings as a dependency-free Stage 2 foundation; it is replaceable behind the embedding/vector interfaces.
 - The application accepts only one active interaction at a time.
 - The router prompt currently assumes an Arch Linux host.
 
