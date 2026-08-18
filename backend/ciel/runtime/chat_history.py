@@ -6,20 +6,31 @@ file = "chatHistoryTools.py"
 
 def loadChatHistory():
     log("debug", f"{file}: load chat history function started")
-    chatHistory = MemoryManager().load_chat_history()
+    manager = MemoryManager()
+    try:
+        chatHistory = manager.load_chat_history()
+    finally:
+        manager.database.close()
     log("info", f"{file}: loaded {len(chatHistory)} chat exchange(s)")
     return chatHistory
 
 
 def saveChatHistory(userMessage, AIresponse):
     log("debug", f"{file}: save chat history function started")
-    MemoryManager().save_chat_exchange(userMessage, AIresponse)
+    manager = MemoryManager()
+    try:
+        manager.save_chat_exchange(userMessage, AIresponse)
+    finally:
+        manager.database.close()
     log("debug", f"{file}: save chat history function finished")
 
 
 def wipeChatHistory():
     log("debug", f"{file}: wipe chat history function started")
     manager = MemoryManager()
-    manager.database.execute("DELETE FROM messages")
-    manager.database.execute("DELETE FROM interactions")
+    try:
+        manager.database.execute("DELETE FROM messages")
+        manager.database.execute("DELETE FROM interactions")
+    finally:
+        manager.database.close()
     log("debug", f"{file}: wipe chat history function finished")
